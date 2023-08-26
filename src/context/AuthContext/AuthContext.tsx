@@ -18,7 +18,7 @@ const AuthContextProvider: React.FC<AuthContextComponentProvider> = ({
     children
 }) => {
     const [isAuth, setIsAuth] = useState(false);
-    const previousColor = useRef<string>("")
+    const previousColor = useRef<string>("red")
     const [backgroundColor, setBackgroundColor] = useState("aliceblue")
     /**
      * When page load it check that user already login or not
@@ -45,10 +45,12 @@ const AuthContextProvider: React.FC<AuthContextComponentProvider> = ({
             if (response?.success) {
                 return `#${response.colors?.[0]?.hex}`
             }
-            return ""
+            previousColor.current = "red"
+            return "aliceblue"
         }
-        return ""
+        return "aliceblue"
     }, [backgroundColor, isAuth])
+
     /**
      * Update background color state
      */
