@@ -9,10 +9,10 @@ import { db } from "./config";
 export const addDataToFirebaseStore = async (path: string, data: object) => {
     try {
         const response = await addDoc(collection(db, path), data);
-        console.log(response);
+
         return response
     } catch (error) {
-        return error
+        return { error: error }
     }
 }
 

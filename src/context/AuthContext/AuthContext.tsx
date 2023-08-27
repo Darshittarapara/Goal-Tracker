@@ -1,13 +1,18 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
-import { LOGIN_KEY } from '../../helper/storage';
+import { TOKEN_KEY, USER, generateUUID } from '../../helper/storage';
 import { baseURL, endPoint } from 'config/colorConfig';
+import { addDataToFirebaseStore, getDocFromFirebase } from "../../Firebase/service";
+import { Strings } from 'config/Strings';
+import Swal from 'sweetalert2';
 
 const AuthContext = createContext({
     isAuth: false,
-    login: () => { },
+    login: (email: string) => { },
     preViousColor: "",
     logOut: () => { },
-    backgroundColor: "aliceblue"
+    isLoading: false,
+    backgroundColor: "aliceblue",
+    signUp: (email: string) => { }
 });
 
 interface AuthContextComponentProvider {
@@ -17,6 +22,8 @@ interface AuthContextComponentProvider {
 const AuthContextProvider: React.FC<AuthContextComponentProvider> = ({
     children
 }) => {
+
+    const [isLoading, setIsLoading] = useState(false);
     const [isAuth, setIsAuth] = useState(false);
     const previousColor = useRef<string>("red")
     const [backgroundColor, setBackgroundColor] = useState("aliceblue")
@@ -25,14 +32,72 @@ const AuthContextProvider: React.FC<AuthContextComponentProvider> = ({
      * If already login then set isAuth true
      */
     useEffect(() => {
-        const hasUserAlreadyLogin = localStorage.getItem(LOGIN_KEY);
+        const hasUserAlreadyLogin = localStorage.getItem(TOKEN_KEY);
         if (hasUserAlreadyLogin) {
-            setIsAuth(Boolean(hasUserAlreadyLogin))
+            setIsAuth(true);
         }
     }, [])
-    const login = () => {
-        setIsAuth(true);
-        localStorage.setItem(LOGIN_KEY, `${true}`)
+    const login = async (email: string) => {
+        setIsLoading(true)
+        const data = await checkCurrentEmailAlreadyRegister(email)
+        if (data) {
+            setIsAuth(true);
+            localStorage.setItem(TOKEN_KEY, `${data}`)
+        } else {
+            Swal.fire({
+                title: 'Oops !',
+                text: `${email} ${Strings.emailNotRegister}`,
+                icon: 'error',
+                confirmButtonText: Strings.ok
+            })
+        }
+
+        setIsLoading(false)
+    }
+
+    const checkCurrentEmailAlreadyRegister = async (email: string) => {
+        const data: any[] = await getDocFromFirebase(USER);
+        const hasAlreadyRegister = data?.find((item) => {
+            return item?.email?.includes(email)
+        })
+        return hasAlreadyRegister ? hasAlreadyRegister?.token : false
+    }
+    /**
+     * This function store the user data in a firebase storage with a unique Id
+     * @param email 
+     */
+    const signUp = async (email: string) => {
+        const payload = {
+            email,
+            token: generateUUID()
+        }
+        setIsLoading(true)
+        const hasAlreadyRegister = await checkCurrentEmailAlreadyRegister(email);
+        if (hasAlreadyRegister) {
+            Swal.fire({
+                title: 'Error!',
+                text: `${email} ${Strings.emailAlreadyRegister}`,
+                icon: 'error',
+                confirmButtonText: Strings.ok
+            })
+            setIsLoading(false)
+            return
+        }
+        const response = await addDataToFirebaseStore(USER, payload);
+        const error = response as { error: string }
+
+        if (!error?.error) {
+            localStorage.setItem(TOKEN_KEY, payload.token);
+            setIsAuth(true);
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: error?.error as unknown as string,
+                icon: 'error',
+                confirmButtonText: Strings.ok
+            })
+        }
+        setIsLoading(false)
     }
     /**
      * This fetch the random color from API and return the latest color and update previous state
@@ -72,9 +137,11 @@ const AuthContextProvider: React.FC<AuthContextComponentProvider> = ({
     }
     const ctx = {
         isAuth,
+        isLoading,
         login,
         logOut,
         backgroundColor,
+        signUp,
         preViousColor: previousColor?.current
     }
 
