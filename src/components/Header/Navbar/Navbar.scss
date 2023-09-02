@@ -1,0 +1,15 @@
+.nav-link {
+    color: white;
+
+    &:hover {
+        color: black;
+    }
+
+    &:active {
+        color: black;
+    }
+}
+
+.active {
+    color: black;
+}
