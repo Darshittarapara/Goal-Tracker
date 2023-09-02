@@ -4,7 +4,8 @@ import PrivateRouting from './PrivateRouting'
 import AuthRouting from './AuthRouting'
 
 const Routing = () => {
-    const { isAuth } = useAuthContext()
+    const { isAuth } = useAuthContext();
+    console.log(isAuth)
     return (
         <>
             {isAuth ? <PrivateRouting /> : <AuthRouting />}
