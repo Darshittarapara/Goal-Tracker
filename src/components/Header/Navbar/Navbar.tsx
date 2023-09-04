@@ -1,28 +1,40 @@
-import React from 'react'
+import React, { LegacyRef } from 'react'
 import { apiRouting } from 'config/apiRouting';
 import { Strings } from 'config/Strings';
 import "./Navbar.scss";
 import { NavLink } from 'react-router-dom';
-
-const Navbar = () => {
+interface NavbarProps {
+    navToggleClass: string;
+    toggleNavBar: (isOpen: boolean) => void
+}
+const Navbar: React.FC<NavbarProps> = ({
+    navToggleClass, toggleNavBar
+}) => {
+    const navLinks = [
+        {
+            title: Strings.dashboard,
+            path: apiRouting.dashboard
+        },
+        {
+            title: Strings.goals,
+            path: apiRouting.goal.list
+        },
+        {
+            title: Strings.addGoals,
+            path: apiRouting.goal.add
+        },
+    ]
     return (
-        <ul className='nav'>
-            <li className='nav-item'>
-                <NavLink className={({ isActive }) => {
-                    return isActive ? "nav-link active" : 'nav-link'
-
-                }} to={apiRouting.dashboard}>{Strings.dashboard}</NavLink>
-            </li>
-            <li className='nav-item'>
-                <NavLink className={({ isActive }) => {
-                    return isActive ? "nav-link active" : 'nav-link'
-                }} to={apiRouting.goal.list}>{Strings.goals}</NavLink>
-            </li>
-            <li className='nav-item'>
-                <NavLink className={({ isActive }) => {
-                    return isActive ? "nav-link active" : 'nav-link'
-                }} to={apiRouting.goal.add}>{Strings.addGoals}</NavLink>
-            </li>
+        <ul className={`nav ${navToggleClass}`}>
+            {navLinks.map(({ title, path }, index) => {
+                return (
+                    <li className='nav-item' onClick={() => toggleNavBar(false)}>
+                        <NavLink className={({ isActive }) => {
+                            return isActive ? "nav-link active" : 'nav-link'
+                        }} to={path}>{title}</NavLink>
+                    </li>
+                )
+            })}
         </ul>
     )
 }
