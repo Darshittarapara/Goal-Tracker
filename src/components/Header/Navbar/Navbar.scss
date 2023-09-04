@@ -19,10 +19,10 @@
     .nav {
         display: flex;
         opacity: 0;
-        transition: opacity 0.25s ease-in-out;
+        transition: all 0.25s ease-in-out;
         flex-direction: column;
-        z-index: 2;
         border-radius: 0px;
+        visibility: hidden;
         background: #31635f;
         position: absolute;
         top: 70px;
