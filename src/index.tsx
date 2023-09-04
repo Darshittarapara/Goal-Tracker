@@ -6,6 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import AuthContextProvider from './context/AuthContext/AuthContext';
 import { BrowserRouter } from 'react-router-dom'
 import Routing from './Routing/Routing';
+import "react-datepicker/dist/react-datepicker.css";
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

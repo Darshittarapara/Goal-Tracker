@@ -4,7 +4,10 @@ import { baseURL, endPoint } from 'config/colorConfig';
 import { addDataToFirebaseStore, getDocFromFirebase } from "../../Firebase/service";
 import { Strings } from 'config/Strings';
 import Swal from 'sweetalert2';
-
+import { useNavigate } from 'react-router';
+import { apiRouting } from 'config/apiRouting';
+import { getAuth, signOut } from "firebase/auth"
+import { app } from '../../Firebase/config';
 const AuthContext = createContext({
     isAuth: false,
     login: (email: string) => { },
@@ -22,7 +25,7 @@ interface AuthContextComponentProvider {
 const AuthContextProvider: React.FC<AuthContextComponentProvider> = ({
     children
 }) => {
-
+    const navigator = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [isAuth, setIsAuth] = useState(false);
     const previousColor = useRef<string>("red")
@@ -83,6 +86,7 @@ const AuthContextProvider: React.FC<AuthContextComponentProvider> = ({
             setIsLoading(false)
             return
         }
+
         const response = await addDataToFirebaseStore(USER, payload);
         const error = response as { error: string }
 
@@ -132,8 +136,28 @@ const AuthContextProvider: React.FC<AuthContextComponentProvider> = ({
     }, [getRandomColor])
 
     const logOut = () => {
-        setIsAuth(false);
-        localStorage.clear()
+        Swal.fire({
+            title: 'Alert!',
+            text: Strings.areYouSureWantToLogOut,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: Strings.logOut,
+            cancelButtonText: Strings.cancel,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33"
+        }).then(async (res) => {
+            if (res.isConfirmed) {
+                signOut(getAuth(app)).then(() => {
+                    setIsAuth(false);
+                    localStorage.clear()
+                    navigator(apiRouting.home)
+                }).catch((error) => {
+                    alert(error)
+                });
+
+            }
+        })
+
     }
     const ctx = {
         isAuth,

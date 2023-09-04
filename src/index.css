@@ -13,3 +13,15 @@ code {
     monospace;
     background: i;
 }
+.required {
+  position: relative;
+}
+
+.required label:after {
+  color: #e32;
+  content: ' *';
+position: absolute;
+top: 2px;
+  font-size: 20px;
+
+}
