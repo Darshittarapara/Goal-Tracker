@@ -2,7 +2,11 @@ export const LOGIN_KEY = "login_key";
 export const TOKEN_KEY = "token_key";
 
 /**This will give the docs paths string */
-export const USER = "users"
+export const USER = "users";
+export const GOALS = "goals";
+export const GOALSIDLIST = "goalsIdList"
+export const GOALSDOCUMENTID = 'd08hGAeg1STzSVHiI4uO'
+
 /**
  * This will generate the user token
  * @returns string
@@ -24,5 +28,5 @@ export function generateUUID()
 		return (c==='x' ? r : (r&0x3|0x8)).toString(16);
 	});
 
-return uuid;
+return uuid?.replaceAll("-", "");
 }

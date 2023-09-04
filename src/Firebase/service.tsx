@@ -6,10 +6,10 @@ import { db } from "./config";
  * @param payload: data 
  */
 
-export const addDataToFirebaseStore = async (path: string, data: object) => {
+export const addDataToFirebaseStore = async (path: string, data: object, subPath = "") => {
     try {
-        const response = await addDoc(collection(db, path), data);
-
+        const modifiedCollection = subPath ? collection(db, path, subPath) : collection(db, path)
+        const response = await addDoc(modifiedCollection, data);
         return response
     } catch (error) {
         return { error: error }

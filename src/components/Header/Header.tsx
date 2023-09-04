@@ -1,12 +1,13 @@
 import React from 'react'
 import { Strings } from 'config/Strings'
-import { Button, Col, Container, Row } from "react-bootstrap"
+import { Container } from "react-bootstrap"
 import { useAuthContext } from 'context/AuthContext/AuthContext'
 import Img from 'components/Image'
 import Logo from "assets/image/logo.png";
 import Navbar from './Navbar/Navbar'
 import "./Header.scss";
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSignOut } from '@fortawesome/free-solid-svg-icons'
 const Header = () => {
     const { logOut } = useAuthContext()
     return (
@@ -18,25 +19,15 @@ const Header = () => {
                     </div>
                 </div>
                 <div className='col-md-8 col-sm-8 col-xl-8'>
-                    <div className='row'>
-                        <div className='col-md-6 col-sm-6 col-xl-6'>
-                            <Navbar />
-                        </div>
-                        <div className='col-md-6 col-sm-6 col-xl-6'>
-                            <div className='float-end pr-10 m-2'>
-                                <Button variant="danger" onClick={logOut}>
-                                    {Strings.logOut}
-                                </Button>
-                            </div>
+                    <div className='float-end pr-10 m-2 d-flex'>
+                        <Navbar />
+                        <span className='btn bg-danger text-light' title={Strings.logOut} onClick={logOut} style={{ cursor: "pointer", borderRadius: "10px" }}>
+                            <FontAwesomeIcon icon={faSignOut} />
+                        </span>
 
-                        </div>
                     </div>
-
-
                 </div>
-
             </div>
-
         </Container>
     )
 }

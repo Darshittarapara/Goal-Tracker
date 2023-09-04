@@ -42,7 +42,7 @@ const Login = () => {
     const handleEmailChange = (value: string, name: string) => {
         formik.setFieldValue(name, value)
     }
-    console.log(style)
+
     /**This will handler the login and sign up page */
     const handlerIsSignUpState = (isSignUp: boolean) => {
         formik.setFieldTouched("email", false);
