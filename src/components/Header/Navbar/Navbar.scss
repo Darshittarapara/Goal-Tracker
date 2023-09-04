@@ -1,5 +1,6 @@
 .nav-link {
     color: white;
+    font-size: 17px;
 
     &:hover {
         color: black;
@@ -12,4 +13,20 @@
 
 .active {
     color: black;
+}
+
+@media screen and (max-width: 768px) {
+    .nav {
+        display: flex;
+        opacity: 0;
+        transition: opacity 0.25s ease-in-out;
+        flex-direction: column;
+        z-index: 2;
+        border-radius: 0px;
+        background: #31635f;
+        position: absolute;
+        top: 70px;
+        width: 100vw;
+        right: 0px;
+    }
 }
