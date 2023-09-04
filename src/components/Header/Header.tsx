@@ -8,18 +8,24 @@ import "./Header.scss";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faClose, faSignOut } from '@fortawesome/free-solid-svg-icons'
 import Icon from 'components/Icons'
+import { apiRouting } from 'config/apiRouting';
+import { useNavigate } from 'react-router';
 const Header = () => {
+    const navigator = useNavigate();
     const { logOut } = useAuthContext()
     const [isMenubarOpen, setIsMenubarOpen] = useState(false)
     const navContainerClass = isMenubarOpen ? "show-menubar" : "";
     const toggleNavBar = (isOpen: boolean) => {
         setIsMenubarOpen(isOpen)
     }
+    const redirectToDashboard = () => {
+        navigator(apiRouting.dashboard)
+    }
     return (
         <div className='header'>
-            <div className="row">
+            <div className="row m-0">
                 <div className='col-md-4 col-sm-4 col-xl-4 col-4'>
-                    <div className='header-logo'>
+                    <div className='header-logo' onClick={redirectToDashboard}>
                         <Img src={Logo} alt="logo" className='logo' />
                     </div>
                 </div>
