@@ -49,3 +49,7 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 ### Structure of a goal history
 - Make a one documents like a goalHistory ID
 - In that add the id 0 and increase every time (Update)
+
+### For testing edit goal use below Id
+- ZauFl3qwtPIkjFR0u6B1
+- WmAFBmjAHJQxUVrxYoGr

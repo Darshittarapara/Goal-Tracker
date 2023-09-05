@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
 import { TOKEN_KEY, USER, generateUUID } from '../../helper/storage';
 import { baseURL, endPoint } from 'config/colorConfig';
-import { addDataToFirebaseStore, getDocFromFirebase } from "../../Firebase/service";
+import { addDataToFirebaseStore, getDocsFromFirebase } from "../../Firebase/service";
 import { Strings } from 'config/Strings';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router';
@@ -59,7 +59,7 @@ const AuthContextProvider: React.FC<AuthContextComponentProvider> = ({
     }
 
     const checkCurrentEmailAlreadyRegister = async (email: string) => {
-        const data: any[] = await getDocFromFirebase(USER);
+        const data: any[] = await getDocsFromFirebase(USER);
         const hasAlreadyRegister = data?.find((item) => {
             return item?.email?.includes(email)
         })
