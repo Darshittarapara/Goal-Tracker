@@ -12,6 +12,10 @@ import { GOALS, TOKEN_KEY } from 'helper/storage'
 import moment from "moment";
 import { AddGoalsPayload, useGoalContext } from 'context/GoalContext/GoalContext'
 import { useParams } from 'react-router'
+import { NavLink } from 'react-router-dom'
+import { apiRouting } from 'config/apiRouting'
+import Icon from 'components/Icons'
+import { faChevronDown, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 const initialValues = {
     name: "",
     startDate: new Date(),
@@ -96,11 +100,19 @@ const AddGoals = () => {
         formik.setFieldValue(name, value)
     }
 
-
     const handlerBlur = (name: string) => {
         formik.setFieldTouched(name, true);
     }
 
+    const navStyle = {
+        background: "black",
+        color: "white",
+        margin: "0px 4px",
+        width: "20px",
+        cursor: "pointer",
+        height: "20px",
+        borderRadius: "100%"
+    }
     const hasDisabled = !formik.values.endDate || !formik.values.startDate || !formik.values.priority || !formik.values.name
     return (
         <>
@@ -108,7 +120,10 @@ const AddGoals = () => {
                 <Spinner />
             </div> : (
                 <Card>
-                    <Card.Header>
+                    <Card.Header className='d-flex'>
+                        {id && <NavLink style={{ ...navStyle }} className='text-align-center' to={apiRouting.goal.list}>
+                            <Icon icon={faChevronLeft} />
+                        </NavLink>}
                         <Card.Title>{id ? Strings.updateGoal : Strings.addGoals}</Card.Title>
                     </Card.Header>
                     <Card.Body>
