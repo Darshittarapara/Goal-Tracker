@@ -1,19 +1,27 @@
-import React, { createContext, useContext, useState } from 'react'
-import { addDataToFirebaseStore } from "../../Firebase/service";
+import React, { createContext, useCallback, useContext, useState } from 'react'
+import { addDataToFirebaseStore, updateDocsToFirebaseStore } from "../../Firebase/service";
 import { Strings } from 'config/Strings';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import { useNavigate } from 'react-router';
 import { apiRouting } from 'config/apiRouting';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../Firebase/config';
+import { GOALS, TOKEN_KEY } from 'helper/storage';
 
 /**Change any */
 const GoalContext = createContext<GoalsContextProps>({
     goals: [],
     isLoading: false,
+    isDataFetch: false,
+    onUpdate: (payload: AddGoalsPayload, path: string, docId: string,) => { },
+    getSpecificDocs: (id: string) => { },
     onAddGoal: (payload: AddGoalsPayload, path: string) => { }
 });
 
 interface GoalsContextProps extends GoalReducerState {
+    getSpecificDocs: (id: string) => any
+    onUpdate: (payload: AddGoalsPayload, path: string, docId: string,) => void
     onAddGoal: (payload: AddGoalsPayload, path: string) => void
 }
 interface AuthContextComponentProvider {
@@ -22,17 +30,15 @@ interface AuthContextComponentProvider {
 
 interface GoalReducerState {
     goals: any[];
-    isLoading: boolean
+    isLoading: boolean,
+    isDataFetch: boolean
 }
-interface AddGoalsPayload {
+export interface AddGoalsPayload {
     startDate: string;
     dueDate: string;
     archiveSteps: string;
     name: string
-    goalTracker: {
-        id: number;
-        isCompleted: boolean
-    }
+    goalTracker: string
     priority: string;
 }
 const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
@@ -40,7 +46,8 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
 }) => {
     const [state, setState] = useState<GoalReducerState>({
         goals: [],
-        isLoading: false
+        isLoading: false,
+        isDataFetch: false,
     })
     const navigator = useNavigate();
 
@@ -68,33 +75,74 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
         return { data, differentDays };
     };
 
-    /**
-     * This function store the user data in a firebase storage with a unique Id
-     * @param payload
-     * @param path 
-     */
-    const addGoalToFirebase = async (payload: AddGoalsPayload, path: string) => {
+    const getSpecificDocs = useCallback(async (docId: string) => {
+        const token = localStorage.getItem(TOKEN_KEY)
+        setState((preViewState) => {
+            return {
+                ...preViewState,
+                isDataFetch: true
+            }
+        });
+        const response = await getDoc(doc(db, `${GOALS}${token}`, docId));
+        setState((preViewState) => {
+            return {
+                ...preViewState,
+                isDataFetch: false
+            }
+        });
+        if (response.exists()) {
+            return response.data()
+        }
+        Swal.fire({
+            title: "Error!",
+            text: Strings.goalNotFound,
+            icon: "error",
+            confirmButtonText: Strings.ok
+        }).then((res) => {
+            if (res.isConfirmed) {
+                navigator(apiRouting.goal.list);
+            }
+        })
+
+    }, [])
+
+    const performFirebaseOperation = async (
+        payload: AddGoalsPayload,
+        path: string,
+        operationType: 'update' | 'add',
+        docId?: string
+    ) => {
         setState({
             ...state,
             isLoading: true
-        })
-        const { data, differentDays } = calculateGoalTrackerData(payload.startDate, payload.dueDate, payload.name)
+        });
+
+        const { data, differentDays } = calculateGoalTrackerData(payload.startDate, payload.dueDate, payload.name);
         const newPayload = {
             ...payload,
             goalTracker: JSON.stringify(data),
             totalDays: differentDays
+        };
+
+        let response;
+
+        if (operationType === 'update') {
+            response = await updateDocsToFirebaseStore(path, docId as string, newPayload);
+        } else if (operationType === 'add') {
+            response = await addDataToFirebaseStore(path, newPayload);
         }
 
-        const response = await addDataToFirebaseStore(path, newPayload);
-        const error = response as { error: string }
+        const error = response as { error: string };
+
         setState({
             ...state,
             isLoading: false
-        })
+        });
+
         if (!error?.error) {
             Swal.fire({
                 title: 'Success',
-                text: Strings.yourGoalSuccessFullyAdded,
+                text: operationType === 'update' ? Strings.yourGoalSuccussFullyUpdated : Strings.yourGoalSuccessFullyAdded,
                 icon: 'success',
                 showCancelButton: true,
                 confirmButtonText: Strings.goToGoals,
@@ -103,22 +151,40 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
                 cancelButtonColor: "#d33"
             }).then((res) => {
                 if (res.isConfirmed) {
-                    navigator(apiRouting.goal.list)
+                    navigator(apiRouting.goal.list);
                 }
-            })
+            });
         } else {
             Swal.fire({
                 title: 'Error!',
                 text: error?.error as unknown as string,
                 icon: 'error',
                 cancelButtonText: Strings.ok
-            })
-
+            });
         }
-    }
+    };
+
+    const updateGoalToFirebase = async (
+        payload: AddGoalsPayload,
+        path: string,
+        docId: string
+    ) => {
+        performFirebaseOperation(payload, path, 'update', docId);
+    };
+
+    const addGoalToFirebase = async (
+        payload: AddGoalsPayload,
+        path: string
+    ) => {
+        performFirebaseOperation(payload, path, 'add');
+    };
+
     const goalContextValue = {
         isLoading: state.isLoading,
         goals: state.goals,
+        isDataFetch: state.isDataFetch,
+        getSpecificDocs,
+        onUpdate: updateGoalToFirebase,
         onAddGoal: addGoalToFirebase
     }
 

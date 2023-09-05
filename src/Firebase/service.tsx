@@ -1,4 +1,4 @@
-import { addDoc, collection, getDoc, getDocs } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "./config";
 
 /**
@@ -17,11 +17,25 @@ export const addDataToFirebaseStore = async (path: string, data: object, subPath
 }
 
 /**
+ * @param path : ref to data store in firebase collection
+ * @param docId: document id in a firebase
+ * @param payload: data 
+ */
+
+export const updateDocsToFirebaseStore = async (collectionPath: string, docId: string, payload: object) => {
+    try {
+        const response = await updateDoc(doc(db, collectionPath, docId), payload);
+        return response;
+    } catch (error) {
+        return { error: error }
+    }
+}
+/**
  * 
  * @param path 
  * @returns Array of a document
  */
-export const getDocFromFirebase = async (path: string) => {
+export const getDocsFromFirebase = async (path: string) => {
     try {
         /**Change interface when you work on listing */
         const data: any = [];
