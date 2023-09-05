@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
-import { TOKEN_KEY, USER, generateUUID } from '../../helper/storage';
+import { LOGIN_EMAIL, TOKEN_KEY, USER, generateUUID } from '../../helper/storage';
 import { baseURL, endPoint } from 'config/colorConfig';
 import { addDataToFirebaseStore, getDocsFromFirebase } from "../../Firebase/service";
 import { Strings } from 'config/Strings';
@@ -45,7 +45,9 @@ const AuthContextProvider: React.FC<AuthContextComponentProvider> = ({
         const data = await checkCurrentEmailAlreadyRegister(email)
         if (data) {
             setIsAuth(true);
-            localStorage.setItem(TOKEN_KEY, `${data}`)
+            localStorage.setItem(TOKEN_KEY, `${data?.token}`);
+            localStorage.setItem(LOGIN_EMAIL, `${data?.email}`);
+
         } else {
             Swal.fire({
                 title: 'Oops !',
@@ -63,7 +65,7 @@ const AuthContextProvider: React.FC<AuthContextComponentProvider> = ({
         const hasAlreadyRegister = data?.find((item) => {
             return item?.email?.includes(email)
         })
-        return hasAlreadyRegister ? hasAlreadyRegister?.token : false
+        return hasAlreadyRegister ? hasAlreadyRegister : false
     }
     /**
      * This function store the user data in a firebase storage with a unique Id
@@ -92,6 +94,7 @@ const AuthContextProvider: React.FC<AuthContextComponentProvider> = ({
 
         if (!error?.error) {
             localStorage.setItem(TOKEN_KEY, payload.token);
+            localStorage.setItem(LOGIN_EMAIL, payload.email);
             setIsAuth(true);
         } else {
             Swal.fire({

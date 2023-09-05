@@ -1,26 +1,50 @@
 import React, { createContext, useCallback, useContext, useState } from 'react'
-import { addDataToFirebaseStore, updateDocsToFirebaseStore } from "../../Firebase/service";
+import { addDataToFirebaseStore, getDocsFromFirebase, updateDocsToFirebaseStore } from "../../Firebase/service";
 import { Strings } from 'config/Strings';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import { useNavigate } from 'react-router';
 import { apiRouting } from 'config/apiRouting';
-import { doc, getDoc } from 'firebase/firestore';
+import { deleteDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../Firebase/config';
-import { GOALS, TOKEN_KEY } from 'helper/storage';
+import { GOALS, TOKEN_KEY, goalListDropDownOption } from 'helper/storage';
+import { StringifyOptions } from 'querystring';
 
 /**Change any */
 const GoalContext = createContext<GoalsContextProps>({
     goals: [],
     isLoading: false,
     isDataFetch: false,
+    onActionValueChange: (value: string, id: string, goalTracker: GoalTrackerType[]) => { },
+    selectedActionOption: "",
+    calculateGoalProcess: (totalDays: number, goalTracker: GoalTrackerType[]) => 0,
+    getAllGoals: (path: string) => { },
     onUpdate: (payload: AddGoalsPayload, path: string, docId: string,) => { },
     getSpecificDocs: (id: string) => { },
     onAddGoal: (payload: AddGoalsPayload, path: string) => { }
 });
-
+interface GoalTrackerType {
+    id: string
+    startDate: string
+    endDate: string
+    isCompleted: boolean
+}
+export interface GoalsStateFields {
+    startDate: string;
+    id: string;
+    dueDate: string;
+    archiveSteps: string;
+    name: string
+    goalTracker: GoalTrackerType[]
+    totalDays: number;
+    priority: string;
+}
 interface GoalsContextProps extends GoalReducerState {
     getSpecificDocs: (id: string) => any
+    onActionValueChange: (value: string, id: string, goalTracker: GoalTrackerType[]) => void
+    selectedActionOption: string
+    calculateGoalProcess: (totalDays: number, goalTracker: GoalTrackerType[]) => number
+    getAllGoals: (path: string) => void
     onUpdate: (payload: AddGoalsPayload, path: string, docId: string,) => void
     onAddGoal: (payload: AddGoalsPayload, path: string) => void
 }
@@ -49,8 +73,61 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
         isLoading: false,
         isDataFetch: false,
     })
+    const [selectedActionOption, setSelectedActionOption] = useState("");
     const navigator = useNavigate();
 
+    const calculateGoalProcess = (totalDays: number, goalTracker: GoalTrackerType[]) => {
+        const completedDays = goalTracker?.filter((item) => item.isCompleted);
+        return (completedDays.length / totalDays) * 100
+    }
+
+    // const handlerCompletedTodayFieldInFirebase = async (goalTracker: GoalTrackerType[], docId: string) => {
+    //     const token = localStorage.getItem(TOKEN_KEY)
+    //     const todayDate = moment(new Date()).format("YYYY-MM-DD");
+    //     const newGoalTracker = goalTracker.map((item) => {
+    //         if (todayDate === item.startDate) {
+    //             return {
+    //                 ...item,
+    //                 isCompleted: true
+    //             }
+    //         }
+    //         return item
+    //     })
+    //     const newGoalList = state.goals.find((item) => item.id === docId);
+    //     const response = await updateDocsToFirebaseStore(GOALS + token, docId as string, {
+    //         ...newGoalList,
+    //         goalTracker: JSON.stringify(newGoalList)
+    //     });
+
+    //     console.log(response)
+    // }
+
+    const deleteDocFromFirebase = async (docId: string) => {
+        const path = GOALS + localStorage.getItem(TOKEN_KEY);
+        await deleteDoc(doc(db, path, docId));
+        await getGoalListFromFirebase(path)
+    }
+    const handlerActionButtonSelectInputChange = (value: string, id: string, goalTracker: GoalTrackerType[]) => {
+        if (value === goalListDropDownOption.edit) {
+            navigator(`${apiRouting.goal.edit.replace(":id", id)}`)
+        }
+        if (value === goalListDropDownOption.delete) {
+            Swal.fire({
+                title: "",
+                icon: 'warning',
+                text: Strings.areYouWantToDeleteThisGoal,
+                confirmButtonText: Strings.delete,
+                showCancelButton: true,
+                cancelButtonText: Strings.cancel,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33"
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    deleteDocFromFirebase(id)
+                }
+            })
+        }
+    }
     /**
    * Generate the goal tracker loop
    * @param {string} startDate
@@ -104,8 +181,43 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
             }
         })
 
+    }, [navigator])
+    /**
+     * @param {string} Documents path
+     * This will get the list from firebase base on a PATH
+     */
+    const getGoalListFromFirebase = useCallback(async (path: string) => {
+        setState((preViewState) => {
+            return {
+                ...preViewState,
+                isLoading: true
+            }
+        })
+        const data: AddGoalsPayload[] = await getDocsFromFirebase(path);
+        if (data?.length > 0) {
+            const newGoal = data?.map((item) => {
+                return {
+                    ...item,
+                    goalTracker: JSON.parse(item.goalTracker)
+                }
+            });
+            setState((preViewState) => {
+                return {
+                    ...preViewState,
+                    isLoading: false,
+                    goals: newGoal
+                }
+            })
+            return
+        }
+        setState((preViewState) => {
+            return {
+                ...preViewState,
+                isLoading: false,
+                goals: []
+            }
+        })
     }, [])
-
     const performFirebaseOperation = async (
         payload: AddGoalsPayload,
         path: string,
@@ -184,6 +296,10 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
         goals: state.goals,
         isDataFetch: state.isDataFetch,
         getSpecificDocs,
+        calculateGoalProcess,
+        getAllGoals: getGoalListFromFirebase,
+        selectedActionOption,
+        onActionValueChange: handlerActionButtonSelectInputChange,
         onUpdate: updateGoalToFirebase,
         onAddGoal: addGoalToFirebase
     }

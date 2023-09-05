@@ -1,11 +1,17 @@
 export const LOGIN_KEY = "login_key";
 export const TOKEN_KEY = "token_key";
-
+export const LOGIN_EMAIL = 'LOGIN_EMAIL'
 /**This will give the docs paths string */
 export const USER = "users";
 export const GOALS = "goals";
 export const GOALSIDLIST = "goalsIdList"
 export const GOALSDOCUMENTID = 'd08hGAeg1STzSVHiI4uO'
+export const goalListDropDownOption = {
+	edit: "edit",
+	delete: "delete",
+	updateDailyProgress: "updateDailyProgress",
+	viewDailyProgress: "viewDailyProgress"
+}
 
 /**
  * This will generate the user token
