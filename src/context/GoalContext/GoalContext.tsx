@@ -43,10 +43,10 @@ interface GoalsContextProps extends GoalReducerState {
     getSpecificDocs: (id: string) => any
     onActionValueChange: (value: string, id: string, goalTracker: GoalTrackerType[]) => void
     selectedActionOption: string
+    onAddGoal: (payload: AddGoalsPayload, path: string) => void
     calculateGoalProcess: (totalDays: number, goalTracker: GoalTrackerType[]) => number
     getAllGoals: (path: string) => void
     onUpdate: (payload: AddGoalsPayload, path: string, docId: string,) => void
-    onAddGoal: (payload: AddGoalsPayload, path: string) => void
 }
 interface AuthContextComponentProvider {
     children: React.ReactElement
@@ -126,6 +126,9 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
                     deleteDocFromFirebase(id)
                 }
             })
+        }
+        if (value === goalListDropDownOption.viewDailyProgress) {
+            navigator(apiRouting.goal.dailyProcess.view.replace(":id", id));
         }
     }
     /**

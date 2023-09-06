@@ -7,6 +7,8 @@ export const Strings = {
     emailNotRegister: "email not register",
     backToLogin: "Back to login",
     goals: "Goals",
+    notCompleted: "Not completed",
+    completed: "Completed",
     areYouSureWantToLogOut: "Are you sure want to log out ?",
     emailAlreadyRegister: "email already register",
     home: "Home",

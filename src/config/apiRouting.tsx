@@ -5,6 +5,8 @@ export const apiRouting = {
         list: "/goals",
         add: "goal/add",
         edit: "goal/:id/edit",
-        viewCalender: "/goal/:id/view-calender"
+        dailyProcess: {
+            view: "/goal/:id/view-daily-process"
+        }
     }
 }

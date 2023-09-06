@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { Strings } from 'config/Strings'
 import { useAuthContext } from 'context/AuthContext/AuthContext'
 import Img from 'components/Image'
