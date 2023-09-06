@@ -8,6 +8,7 @@ import AddGoals from 'pages/Goals/Form'
 import Goals from 'pages/Goals/List'
 import PageNotFound from 'pages/PageNotFound'
 import Login from 'pages/Login/Login'
+import ViewDailyProcess from 'pages/DailyProcess/View'
 const Routing = () => {
     const { isAuth } = useAuthContext();
 
@@ -18,6 +19,7 @@ const Routing = () => {
                 <Route path={apiRouting.goal.list} element={<Goals />} />
                 <Route path={apiRouting.goal.add} element={<AddGoals />} />
                 <Route path={apiRouting.goal.edit} element={<AddGoals />} />
+                <Route path={apiRouting.goal.dailyProcess.view} element={<ViewDailyProcess />} />
             </Route>
             {isAuth ? <Route path={apiRouting.home} element={<Navigate to={apiRouting.dashboard} />} /> : <Route path={apiRouting.home} element={<Login />} />}
             <Route path="*" element={<PageNotFound />} />
