@@ -83,8 +83,8 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
     if (completedDays === 0) {
         return "0"; // or handle the case where there are no completed days as needed
     }
-
-    return ((completedDays / totalDays) * 100).toFixed();
+const process= (completedDays / totalDayd) * 100
+    return Math.round(process)
 }
 
     // const handlerCompletedTodayFieldInFirebase = async (goalTracker: GoalTrackerType[], docId: string) => {
