@@ -78,7 +78,7 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
 
     const calculateGoalProcess = (totalDays: number, goalTracker: GoalTrackerType[]) => {
         const completedDays = goalTracker?.filter((item) => item.isCompleted);
-        return (completedDays.length / totalDays) * 100
+        return ((completedDays.length / totalDays) * 100).toString().toFixed(1)
     }
 
     // const handlerCompletedTodayFieldInFirebase = async (goalTracker: GoalTrackerType[], docId: string) => {
