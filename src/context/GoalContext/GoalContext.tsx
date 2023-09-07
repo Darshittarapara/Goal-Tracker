@@ -77,15 +77,16 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
     const navigator = useNavigate();
 
     const calculateGoalProcess = (totalDays: number, goalTracker: GoalTrackerType[]) => {
-    const completedGoals = goalTracker.filter((item) => item.isCompleted);
-    const completedDays = completedGoals.length;
-    
-    if (completedDays === 0) {
-        return "0"; // or handle the case where there are no completed days as needed
+        if (!Array.isArray(goalTracker)) return 0
+        const completedGoals = goalTracker.filter((item) => item.isCompleted);
+        const completedDays = completedGoals.length;
+
+        if (completedDays === 0) {
+            return 0; // or handle the case where there are no completed days as needed
+        }
+        const process = (completedDays / totalDays) * 100
+        return Number(process.toFixed(1))
     }
-const process= (completedDays / totalDayd) * 100
-    return Math.round(process)
-}
 
     // const handlerCompletedTodayFieldInFirebase = async (goalTracker: GoalTrackerType[], docId: string) => {
     //     const token = localStorage.getItem(TOKEN_KEY)

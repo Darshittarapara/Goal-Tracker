@@ -57,10 +57,10 @@ const Calender: React.FC<CalenderProps> = ({
 
     const renderEventContent = (eventContent: any) => {
         return (
-            <>
+            <div>
                 <b>{eventContent.timeText}</b>
                 <i>{eventContent.event.title}</i>
-            </>
+            </div>
         );
     };
 
