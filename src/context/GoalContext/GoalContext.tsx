@@ -77,7 +77,7 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
     const navigator = useNavigate();
 
     const calculateGoalProcess = (totalDays: number, goalTracker: GoalTrackerType[]) => {
-        const completedDays = goalTracker?.filter((item) => item.isCompleted);
+        const completedDays = goalTracker?.filter((item) => item.isCompleted)?.length;
         return ((completedDays / totalDays) * 100).toFixed(1);
     }
 
