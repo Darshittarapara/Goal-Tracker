@@ -12,6 +12,7 @@ export const Strings = {
     areYouSureWantToLogOut: "Are you sure want to log out ?",
     emailAlreadyRegister: "email already register",
     home: "Home",
+    goalsProcess: "Goals process",
     areYouWantToDeleteThisGoal: "Are you sure want to delete this goal?",
     process: "Process",
     loginEmail: "Login email",
