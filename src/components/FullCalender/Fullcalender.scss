@@ -1,3 +1,38 @@
+/* calendar.css */
+
+.calendar-container {
+    max-width: 1200px;
+    /* Adjust as needed for desktop */
+    margin: 0 auto;
+    padding: 20px;
+
+    .fc {
+        .fc-bg-event {
+            opacity: 0.68;
+            color: white;
+        }
+    }
+}
+
+/* For mobile screens */
+@media (max-width: 768px) {
+    .calendar-container {
+        max-width: 100%;
+        /* Full width for mobile screens */
+        padding: 10px;
+
+
+        .fc {
+            min-height: 500px;
+            min-width: 200px !important;
+        }
+
+        .fc-toolbar-title {
+            font-size: 1.30rem;
+        }
+    }
+}
+
 @media screen and (max-width: 786px) {
     .fc-toolbar-title {
         font-size: 16px;

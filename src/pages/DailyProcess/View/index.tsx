@@ -18,13 +18,19 @@ const ViewDailyProcess = () => {
     }, [getAllGoals])
 
     const getBackgroundColorBaseOnCheckList = (hasDateGone: boolean, isCompleted: boolean) => {
+        const data = {
+            background: "transparent",
+            title: ""
+        }
         if (hasDateGone && !isCompleted) {
-            return "#8B0000"
+            data["background"] = "#8B0000";
+            data["title"] = Strings.incomplted
         }
         if (isCompleted) {
-            return "#008000"
+            data["background"] = "#008000";
+            data["title"] = Strings.completed
         }
-        return "transparent"
+        return data
 
     }
     const goalTracker = useMemo(() => {
@@ -33,9 +39,10 @@ const ViewDailyProcess = () => {
         if (data.goalTracker?.length > 0) {
             const calenderData = data?.goalTracker.map((item) => {
                 const hasDateGone = moment(new Date()).isAfter(item.startDate);
-                let background = getBackgroundColorBaseOnCheckList(hasDateGone, item.isCompleted)
+                let { background, title } = getBackgroundColorBaseOnCheckList(hasDateGone, item.isCompleted)
                 return {
                     id: item.id,
+                    title: title,
                     start: item.startDate,
                     end: item.endDate,
                     display: "background",
