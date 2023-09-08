@@ -1,10 +1,11 @@
+import { Card } from '@mui/material';
 import Calender from 'components/FullCalender'
 import { Strings } from 'config/Strings';
 import { GoalsStateFields, useGoalContext } from 'context/GoalContext/GoalContext';
 import { GOALS, TOKEN_KEY } from 'helper/storage';
 import moment from 'moment';
 import React, { useEffect, useMemo } from 'react'
-import { Card, Spinner } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
 import { useParams } from 'react-router'
 
 const ViewDailyProcess = () => {

@@ -9,7 +9,6 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { EventInput } from '@fullcalendar/core'
 import { useLocation } from 'react-router';
-
 let eventGuid = 0
 let todayStr = new Date().toISOString().replace(/T.*$/, '') // YYYY-MM-DD of today
 
@@ -66,32 +65,36 @@ const Calender: React.FC<CalenderProps> = ({
 
 
     return (
-        <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            headerToolbar={{
-                left: 'prev,next',
-                center: 'title',
-                right: 'dayGridMonth',
-            }}
-            initialView='dayGridMonth'
-            editable={true}
-            themeSystem='bootstrap5'
-            firstDay={1}
-            selectable={true}
-            selectMirror={true}
-            dayMaxEvents={true}
-            weekends={weekendsVisible}
-            initialEvents={data}
-            select={handleDateSelect}
-            eventContent={renderEventContent}
-            // eventClick={handleEventClick}
-            selectAllow={(e) => {
-                if (pathname.includes("edit")) {
-                    return true
-                }
-                return false;
-            }}
-        />
+        <div className='demo-app'>
+            <div className='demo-app-main'>
+                <FullCalendar
+                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                    headerToolbar={{
+                        left: 'prev,next',
+                        center: 'title',
+                        right: ""
+                    }}
+                    initialView='dayGridMonth'
+                    editable={true}
+                    themeSystem='cosmo'
+                    firstDay={1}
+                    selectable={true}
+                    selectMirror={true}
+                    dayMaxEvents={true}
+                    weekends={weekendsVisible}
+                    initialEvents={data}
+                    select={handleDateSelect}
+                    eventContent={renderEventContent}
+                    // eventClick={handleEventClick}
+                    selectAllow={(e) => {
+                        if (pathname.includes("edit")) {
+                            return true
+                        }
+                        return false;
+                    }}
+                />
+            </div>
+        </div>
     );
 }
 

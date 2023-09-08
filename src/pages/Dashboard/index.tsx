@@ -7,21 +7,16 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Link from '@mui/material/Link';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import Navbar from 'components/Header/Navbar/Navbar';
 import { Strings } from 'config/Strings';
 import { useDashboardContext } from 'context/Dashboard/DashboardContext';
 import { Row, Col } from 'react-bootstrap';
 import { LinearProgress } from '@mui/material';
+import { useGoalContext } from 'context/GoalContext/GoalContext';
+import Loader from 'components/Loader';
 // import { mainListItems, secondaryListItems } from './listItems';
 
 function Copyright(props: any) {
@@ -93,16 +88,19 @@ const defaultTheme = createTheme();
 export default function Dashboard() {
   const [open, setOpen] = React.useState(true);
   const { goalsProcessList } = useDashboardContext()
+  const { isLoading } = useGoalContext()
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
+      {isLoading ? <Loader /> : (
 
-        {/* <AppBar position="absolute" open={open}>
+        <Box sx={{ display: 'flex' }}>
+          <CssBaseline />
+
+          {/* <AppBar position="absolute" open={open}>
           <Toolbar
             sx={{
               pr: '24px', // keep right padding when drawer closed
@@ -136,7 +134,7 @@ export default function Dashboard() {
             </IconButton>
           </Toolbar>
         </AppBar> */}
-        {/* <Box
+          {/* <Box
           component="main"
           sx={{
             backgroundColor: (theme) =>
@@ -148,68 +146,66 @@ export default function Dashboard() {
             overflow: 'auto',
           }}
         > */}
-        <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
-          <Typography component="h1" variant='h4' sx={{ marginTop: "20px" }}>{Strings.dashboard}</Typography>
-          <Grid container spacing={3}>
-            {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper
-                sx={{
-                  p: 2,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  height: 240,
-                }}
-              >
-                <Typography component="h2" variant="h4" color="dark" gutterBottom>
-                  {Strings.goalsProcess}
-                </Typography>
-                {goalsProcessList?.length > 0 ? (
-                  goalsProcessList.map((item) => {
-                    const progressbarColor = item.value < 50 ? "error" : item.value >= 50 && item.value < 100 ? "primary" : "success"
-                    return (
-                      <Row>
-                        <Col>
-                          <Typography component="h2" variant="h6">{item.title}</Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Box sx={{ width: '100%', mr: 1 }}>
-                              <LinearProgress variant="determinate" color={progressbarColor} value={item.value} />
+          <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
+            <Typography component="h1" variant='h4' sx={{ marginBottom: "20px" }}>{Strings.dashboard}</Typography>
+            <Grid container spacing={3}>
+              {/* Chart */}
+              <Grid item xs={12} md={8} lg={9}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: "auto",
+                  }}
+                >
+                  <Typography component="h2" variant="h4" color="dark" gutterBottom>
+                    {Strings.goalsProcess}
+                  </Typography>
+                  {goalsProcessList?.length > 0 ? (
+                    goalsProcessList.map((item) => {
+                      const progressbarColor = item.value < 50 ? "error" : item.value >= 50 && item.value < 100 ? "primary" : "success"
+                      return (
+                        <Row>
+                          <Col>
+                            <Typography component="h2" variant="h6">{item.title}</Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Box sx={{ width: '100%', mr: 1 }}>
+                                <LinearProgress variant="determinate" color={progressbarColor} value={item.value} />
+                              </Box>
+                              <Box sx={{ minWidth: 35 }}>
+                                <Typography variant="body2" color="text.secondary">{`${Math.round(
+                                  item.value,
+                                )}%`}</Typography>
+                              </Box>
                             </Box>
-                            <Box sx={{ minWidth: 35 }}>
-                              <Typography variant="body2" color="text.secondary">{`${Math.round(
-                                item.value,
-                              )}%`}</Typography>
-                            </Box>
-                          </Box>
-                        </Col>
-                      </Row>
-                    )
-                  })
-                ) : <h2>No found</h2>}
-              </Paper>
+                          </Col>
+                        </Row>
+                      )
+                    })
+                  ) : <h4>No found</h4>}
+                </Paper>
+              </Grid>
+              {/* Recent Deposits */}
+              {/* <Grid item xs={12} md={4} lg={3}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                </Paper>
+              </Grid> */}
+              {/* Recent Orders */}
+              {/* <Grid item xs={12}>
+              
+              </Grid> */}
             </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper
-                sx={{
-                  p: 2,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  height: 240,
-                }}
-              >
-              </Paper>
-            </Grid>
-            {/* Recent Orders */}
-            <Grid item xs={12}>
-              <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                {/* <Orders /> */}
-              </Paper>
-            </Grid>
-          </Grid>
-          <Copyright sx={{ pt: 4 }} />
-        </Container>
-      </Box>
+          </Container>
+        </Box>
+      )}
       {/* </Box> */}
     </ThemeProvider>
   );
