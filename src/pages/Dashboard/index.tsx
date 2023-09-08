@@ -166,7 +166,7 @@ export default function Dashboard() {
                     goalsProcessList.map((item) => {
                       const progressbarColor = item.value < 50 ? "error" : item.value >= 50 && item.value < 100 ? "primary" : "success"
                       return (
-                        <Row>
+                        <Row  className ="mb-2">
                           <Col>
                             <Typography component="h2" variant="h6">{item.title}</Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
