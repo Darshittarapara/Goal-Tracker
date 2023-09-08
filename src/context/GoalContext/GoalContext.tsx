@@ -23,7 +23,7 @@ const GoalContext = createContext<GoalsContextProps>({
     getSpecificDocs: (id: string) => { },
     onAddGoal: (payload: AddGoalsPayload, path: string) => { }
 });
-interface GoalTrackerType {
+export interface GoalTrackerType {
     id: string
     startDate: string
     endDate: string
