@@ -3,7 +3,6 @@ import {
     formatDate,
 } from '@fullcalendar/core';
 import "./Fullcalender.scss";
-import "@fullcalendar/common/main.css";
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
