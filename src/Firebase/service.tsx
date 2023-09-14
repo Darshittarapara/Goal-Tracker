@@ -46,7 +46,7 @@ export const getDocsFromFirebase = async (path: string) => {
                 id: doc.id,
                 ...doc.data()
             })
-            console.log(`${doc.id} => ${doc.data()}`);
+            console.log(doc.id, doc.data());
         });
         return data
     } catch (error) {
