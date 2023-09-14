@@ -8,19 +8,21 @@ import { apiRouting } from 'config/apiRouting';
 import { deleteDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../Firebase/config';
 import { GOALS, TOKEN_KEY, goalListDropDownOption } from 'helper/storage';
-import { StringifyOptions } from 'querystring';
-
+import { Preview } from '@mui/icons-material';
 /**Change any */
 const GoalContext = createContext<GoalsContextProps>({
     goals: [],
     isLoading: false,
     isDataFetch: false,
+    selectedDate: [],
+    onUpdateGoalProcess: (docId: string) => { },
     onActionValueChange: (value: string, id: string, goalTracker: GoalTrackerType[]) => { },
     selectedActionOption: "",
     calculateGoalProcess: (totalDays: number, goalTracker: GoalTrackerType[]) => 0,
     getAllGoals: (path: string) => { },
     onUpdate: (payload: AddGoalsPayload, path: string, docId: string,) => { },
     getSpecificDocs: (id: string) => { },
+    onDateSelected: (date: string, id: string) => { },
     onAddGoal: (payload: AddGoalsPayload, path: string) => { }
 });
 export interface GoalTrackerType {
@@ -41,8 +43,11 @@ export interface GoalsStateFields {
 }
 interface GoalsContextProps extends GoalReducerState {
     getSpecificDocs: (id: string) => any
+    onUpdateGoalProcess: (docId: string) => void,
     onActionValueChange: (value: string, id: string, goalTracker: GoalTrackerType[]) => void
     selectedActionOption: string
+    selectedDate: string[]
+    onDateSelected: (date: string, id: string) => void,
     onAddGoal: (payload: AddGoalsPayload, path: string) => void
     calculateGoalProcess: (totalDays: number, goalTracker: GoalTrackerType[]) => number
     getAllGoals: (path: string) => void
@@ -73,9 +78,9 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
         isLoading: false,
         isDataFetch: false,
     })
-    const [selectedActionOption, setSelectedActionOption] = useState("");
+    const [selectedActionOption] = useState("");
     const navigator = useNavigate();
-
+    const [selectedDate, setSelectedDate] = useState<string[]>([])
     const calculateGoalProcess = (totalDays: number, goalTracker: GoalTrackerType[]) => {
         if (!Array.isArray(goalTracker)) return 0
         const completedGoals = goalTracker.filter((item) => item.isCompleted);
@@ -88,27 +93,66 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
         const process = (completedDays / totalDays) * 100
         return process > 100 ? 100 : Number(process.toFixed(1))
     }
+    /**
+     * This updated the date which user select in update daily process
+     * @param date 
+     */
+    const handlerDateCalenderSelected = (date: string, id: string) => {
+        setState((preViewState) => {
+            return {
+                ...preViewState,
+                goals: duplicateGoals,
+                isLoading: true,
+            }
+        })
+        if (!selectedDate.includes(date)) {
+            setSelectedDate([...selectedDate, date])
+        }
+        const duplicateGoals = [...state.goals]
+        const newGoals: GoalsStateFields = state.goals.find((item) => item.id === id);
+        const newGoalsIndex = state.goals.findIndex((item) => item.id === id);
+        const goalTracker = typeof (newGoals.goalTracker) === "string" ? JSON.parse(newGoals.goalTracker) : newGoals.goalTracker
+        const newGoalTracker = goalTracker?.map((data: { startDate: string; isCompleted: boolean; }) => {
+            if (data?.startDate === date) {
+                return {
+                    ...data,
+                    isCompleted: !data?.isCompleted
+                }
+            }
+            return data
+        })
+        newGoals.goalTracker = [...newGoalTracker];
+        duplicateGoals[newGoalsIndex] = newGoals;
+        setState((preViewState) => {
+            return {
+                ...preViewState,
+                goals: duplicateGoals,
+                isLoading: false
+            }
+        })
 
-    // const handlerCompletedTodayFieldInFirebase = async (goalTracker: GoalTrackerType[], docId: string) => {
-    //     const token = localStorage.getItem(TOKEN_KEY)
-    //     const todayDate = moment(new Date()).format("YYYY-MM-DD");
-    //     const newGoalTracker = goalTracker.map((item) => {
-    //         if (todayDate === item.startDate) {
-    //             return {
-    //                 ...item,
-    //                 isCompleted: true
-    //             }
-    //         }
-    //         return item
-    //     })
-    //     const newGoalList = state.goals.find((item) => item.id === docId);
-    //     const response = await updateDocsToFirebaseStore(GOALS + token, docId as string, {
-    //         ...newGoalList,
-    //         goalTracker: JSON.stringify(newGoalList)
-    //     });
+    }
+    const handlerCompletedTodayFieldInFirebase = async (docId: string) => {
+        setState((previewState) => {
+            return {
+                ...previewState,
+                isLoading: true
+            }
+        })
+        const newGoalData = state.goals.find((item) => item.id === docId)
+        newGoalData.goalTracker = JSON.stringify(newGoalData.goalTracker)
+        const token = localStorage.getItem(TOKEN_KEY)
+        await updateDocsToFirebaseStore(GOALS + token, docId, newGoalData);
+        await getDocsFromFirebase(GOALS + token)
 
-    //     console.log(response)
-    // }
+        setState((previewState) => {
+            return {
+                ...previewState,
+                isLoading: false
+            }
+        })
+
+    }
 
     const deleteDocFromFirebase = async (docId: string) => {
         const path = GOALS + localStorage.getItem(TOKEN_KEY);
@@ -137,6 +181,9 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
         }
         if (value === goalListDropDownOption.viewDailyProgress) {
             navigator(apiRouting.goal.dailyProcess.view.replace(":id", id));
+        }
+        if (value === goalListDropDownOption.updateDailyProgress) {
+            navigator(apiRouting.goal.dailyProcess.update.replace(":id", id));
         }
     }
     /**
@@ -209,7 +256,7 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
             const newGoal = data?.map((item) => {
                 return {
                     ...item,
-                    goalTracker: JSON.parse(item.goalTracker)
+                    goalTracker: typeof (item.goalTracker) !== "string" ? item.goalTracker : JSON.parse(item.goalTracker)
                 }
             });
             setState((preViewState) => {
@@ -307,12 +354,15 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
         goals: state.goals,
         isDataFetch: state.isDataFetch,
         getSpecificDocs,
+        selectedDate,
         calculateGoalProcess,
         getAllGoals: getGoalListFromFirebase,
         selectedActionOption,
         onActionValueChange: handlerActionButtonSelectInputChange,
         onUpdate: updateGoalToFirebase,
-        onAddGoal: addGoalToFirebase
+        onAddGoal: addGoalToFirebase,
+        onUpdateGoalProcess: handlerCompletedTodayFieldInFirebase,
+        onDateSelected: handlerDateCalenderSelected
     }
 
     return <GoalContext.Provider value={goalContextValue}>

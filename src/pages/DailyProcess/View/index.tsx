@@ -45,7 +45,7 @@ const ViewDailyProcess = () => {
                     title: title,
                     start: item.startDate,
                     end: item.endDate,
-                    display: "background",
+                    //    display: "background",
                     backgroundColor: background
                 }
             })

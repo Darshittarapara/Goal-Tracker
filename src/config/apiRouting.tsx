@@ -6,7 +6,8 @@ export const apiRouting = {
         add: "goal/add",
         edit: "goal/:id/edit",
         dailyProcess: {
-            view: "/goal/:id/view-daily-process"
+            view: "/goal/:id/view-daily-process",
+            update: "goal/:id/update-daily-process"
         }
     }
 }

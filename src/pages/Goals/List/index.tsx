@@ -30,7 +30,14 @@ const Goals = () => {
     }
 
     const renderColumn = (item: GoalsStateFields) => {
-        const hasShowCompletedOption = moment(new Date()).isAfter(item.startDate);
+        const currentDate = moment(new Date())
+        const formatStartDate = moment(item.startDate).format("YYYY-MM-DD")
+        const formatDueDate = moment(item.dueDate).format("YYYY-MM-DD")
+        console.log(formatStartDate, formatDueDate)
+        //TODO: Set the update daily process between start and due date
+        const hasShowCompletedOption = currentDate.isSameOrAfter(formatStartDate)
+
+        console.log("hasShowCompletedOption", hasShowCompletedOption)
         const infoTr = hasShowCompletedOption ? "rgb(13,202,240)" : ""
         const process = calculateGoalProcess(item.totalDays, item.goalTracker);
 
