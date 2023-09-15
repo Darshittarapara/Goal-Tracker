@@ -80,7 +80,7 @@ const Calender: React.FC<CalenderProps> = ({
                     center: 'title',
                     right: ""
                 }}
-                selectLongPressDelay={1}
+                longPressDelay={1}
                 initialView='dayGridMonth'
                 editable={true}
                 themeSystem='cosmo'
