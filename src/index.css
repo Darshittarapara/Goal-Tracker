@@ -29,3 +29,13 @@ top: 2px;
   font-size: 20px;
 
 }
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.page-breadcrumbs-link{
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.6);
+}

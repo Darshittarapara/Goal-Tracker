@@ -1,14 +1,15 @@
-import { Card, Container } from '@mui/material';
+import { Breadcrumbs, Card, Container, Typography } from '@mui/material';
 import Calender from 'components/FullCalender'
 import { Strings } from 'config/Strings';
 import { GoalTrackerType, GoalsStateFields, useGoalContext } from 'context/GoalContext/GoalContext';
 import { GOALS, TOKEN_KEY } from 'helper/storage';
 import moment from 'moment';
 import React, { useEffect, useCallback } from 'react'
-import { Spinner } from 'react-bootstrap';
 import { useParams } from 'react-router'
 import { Button } from 'react-bootstrap';
 import Loader from 'components/Loader';
+import { apiRouting } from 'config/apiRouting';
+import { Link } from 'react-router-dom';
 
 const UpdateDailyProcess = () => {
     const { id } = useParams();
@@ -66,8 +67,22 @@ const UpdateDailyProcess = () => {
     console.log("goals", goals)
     return (
         <Container>
-            <div className="d-flex justify-content-end">
-                <Button onClick={updateGoalProcess} type="button" disabled={selectedDate.length === 0 || isLoading}>{isLoading ? Strings.pleaseWait : Strings.update}</Button>
+            <div className='progress-header'>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <Link className='page-breadcrumbs-link' to={apiRouting.dashboard}>
+                        {Strings.home}
+                    </Link>
+                    <Link
+                        className='page-breadcrumbs-link'
+                        to={apiRouting.goal.list}
+                    >
+                        {Strings.goals}
+                    </Link>
+                    <Typography color="text.primary">{Strings.updateDailyProgress}</Typography>
+                </Breadcrumbs>
+                <div>
+                    <Button onClick={updateGoalProcess} type="button" disabled={selectedDate.length === 0 || isLoading}>{isLoading ? Strings.pleaseWait : Strings.update}</Button>
+                </div>
             </div>
             <Card className='p-0 pt-2 p-2 mt-5'>
                 {(goalTracker().length === 0 || isLoading) ? <Loader /> : <Calender onDateSelected={handlerDateSelected} hasSelected={true} data={goalTracker()} />}

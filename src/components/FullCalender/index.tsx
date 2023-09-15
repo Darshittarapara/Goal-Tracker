@@ -3,6 +3,7 @@ import {
     formatDate,
 } from '@fullcalendar/core';
 import "./Fullcalender.scss";
+import "@fullcalendar/common/main.css";
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -79,6 +80,7 @@ const Calender: React.FC<CalenderProps> = ({
                     center: 'title',
                     right: ""
                 }}
+                selectLongPressDelay={1}
                 initialView='dayGridMonth'
                 editable={true}
                 themeSystem='cosmo'
