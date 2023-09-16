@@ -196,7 +196,7 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
     const calculateGoalTrackerData = (startDate: string, endDate: string, name: string) => {
         const data = [];
         const initialDate = moment(startDate, 'DD.MM.YYYY');
-        const differentDays = moment(endDate, 'DD.MM.YYYY').diff(initialDate, 'days') + 1;
+        const differentDays = moment(endDate, 'DD.MM.YYYY').diff(initialDate, 'days');
 
         for (let i = 0; i <= differentDays; i++) {
             const currentDate = moment(initialDate).add(i, 'days');
