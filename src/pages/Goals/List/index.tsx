@@ -2,9 +2,10 @@ import { Strings } from 'config/Strings';
 import { GoalsStateFields, useGoalContext } from 'context/GoalContext/GoalContext'
 import { GOALS, TOKEN_KEY, goalListDropDownOption } from 'helper/storage';
 import React, { useEffect } from 'react'
-import { Card, Spinner } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
 import "./List.scss";
 import moment from 'moment';
+import { Card, CardContent, CardHeader } from '@mui/material';
 
 const Goals = () => {
     const { getAllGoals, goals, isLoading, calculateGoalProcess, onActionValueChange } = useGoalContext();
@@ -20,7 +21,7 @@ const Goals = () => {
         )
     }
 
-    const rows = ["", Strings.name, Strings.startDate, Strings.dueDate, Strings.priority, Strings.process, Strings.actions]
+    const rows = [Strings.name, Strings.startDate, Strings.dueDate, Strings.priority, Strings.process, Strings.actions]
     const checkbox = () => {
         return (
             <div className='form-check checkbox-lg'>
@@ -31,10 +32,11 @@ const Goals = () => {
 
     const renderColumn = (item: GoalsStateFields) => {
         const currentDate = moment()
-        const formatStartDate = moment(item.startDate).format("YYYY-MM-DD")
-        const formatDueDate = moment(item.dueDate).format("YYYY-MM-DD")
+        const formatStartDate = moment(item.startDate)
+        const formatDueDate = moment(item.dueDate)
+        console.log(formatStartDate)
         //TODO: Set the update daily process between start and due date
-        const hasShowCompletedOption = currentDate.isSameOrAfter(item.startDate)
+        const hasShowCompletedOption = formatStartDate.isSameOrBefore(currentDate)
 
         console.log(formatStartDate, "hasShowCompletedOption", hasShowCompletedOption)
         const infoTr = hasShowCompletedOption ? "rgb(13,202,240)" : ""
@@ -42,7 +44,7 @@ const Goals = () => {
 
         return (
             <tr style={{ background: infoTr }} key={`${item.id}`}>
-                <td className='checkbox'>{checkbox()}</td>
+                {/* <td className='checkbox'>{checkbox()}</td> */}
                 <td>{item.name}</td>
                 <td>{item.startDate}</td>
                 <td>{item.dueDate}</td>
@@ -67,12 +69,10 @@ const Goals = () => {
     return (
 
         <Card>
-            <Card.Header>
-                <Card.Title>{Strings.goals}</Card.Title>
-            </Card.Header>
-            <Card.Body className='p-0'>
+            <CardHeader title={Strings.goals} />
+            <CardContent>
                 <div className='table_wrapper'>
-                    <table className='table table-striped table-hover table-bordered m-0 table-responsive'>
+                    <table className='table table-bordered table-hover  m-0 table-responsive'>
                         <thead>
                             <tr>
                                 {rows.map((item, index) => {
@@ -91,8 +91,9 @@ const Goals = () => {
                         </tbody>
                     </table>
                 </div>
+            </CardContent>
 
-            </Card.Body>
+
         </Card>
     )
 }

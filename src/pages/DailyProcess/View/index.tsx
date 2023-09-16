@@ -1,4 +1,4 @@
-import { Breadcrumbs, Card, Container, Typography } from '@mui/material';
+import { Breadcrumbs, Card, CardContent, CardHeader, Container, Paper, Typography } from '@mui/material';
 import Calender from 'components/FullCalender'
 import { Strings } from 'config/Strings';
 import { apiRouting } from 'config/apiRouting';
@@ -9,11 +9,13 @@ import React, { useEffect, useMemo } from 'react'
 import { Button, Spinner } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router'
 import { Link } from 'react-router-dom';
+import AnalysisItem from '../components/AnalysisItem';
+import Loader from 'components/Loader';
 
 const ViewDailyProcess = () => {
     const navigator = useNavigate()
     const { id } = useParams();
-    const { goals, getAllGoals } = useGoalContext();
+    const { goals, getAllGoals, calculateGoalProcess } = useGoalContext();
 
     const startDate = goals.find((item) => item.id === id)?.startDate;
     const hasShowUpdateButton = moment().isSameOrAfter(startDate)
@@ -36,13 +38,61 @@ const ViewDailyProcess = () => {
             data["title"] = Strings.completed
         }
         return data
-
     }
+    console.log("goals", goals)
+    // if (goals.length === 0) {
+    //     return <Loader />
+    // }
+
+    const formatDate = (date: string) => {
+        const splitDate = date.split("-");
+        console.log(splitDate)
+        console.log(moment(`${splitDate[2]}-${splitDate[0]}-${splitDate[1]}`))
+        // return new Date(Number(splitDate[2]), Number(splitDate[1]), Number(splitDate[0]))
+        return moment(date)
+    }
+
+    const currentDate = moment()
+    const currenGoalTracker: GoalsStateFields = goals?.find((item) => item?.id === id);
+    const archivedDays = currenGoalTracker?.goalTracker?.filter((item) => {
+        return item.isCompleted
+    });
+    const nonArchivedDays = currenGoalTracker?.goalTracker?.filter((item) => {
+        return formatDate(item.startDate).isBefore(currentDate) && !item.isCompleted
+    });
+
+    const remainingDays = currenGoalTracker?.goalTracker?.filter((item) => {
+        return formatDate(item.startDate).isSameOrAfter(currentDate)
+    });
+    const overAllProgress = calculateGoalProcess(currenGoalTracker?.totalDays, currenGoalTracker?.goalTracker)
+
+    const analysisSData = [
+        {
+            value: currenGoalTracker?.totalDays,
+            label: Strings.totalTargetDays
+        },
+        {
+            value: archivedDays?.length,
+            label: Strings.archivedGoalsDays
+        },
+        {
+            value: nonArchivedDays?.length,
+            label: Strings.nonArchivedDays
+        },
+        {
+            value: overAllProgress + "%",
+            label: Strings.overallProgress
+        },
+        {
+            value: remainingDays?.length,
+            label: Strings.remainingDays
+        }
+    ]
     const goalTracker = useMemo(() => {
         if (!goals || goals?.length === 0) return []
-        const data: GoalsStateFields = goals?.find((item) => item?.id === id);
-        if (data.goalTracker?.length > 0) {
-            const calenderData = data?.goalTracker.map((item) => {
+        const dataCurrentGoalTracker: GoalsStateFields = goals?.find((item) => item?.id === id);
+        if (dataCurrentGoalTracker?.goalTracker?.length > 0) {
+            const calenderData = dataCurrentGoalTracker?.goalTracker.map((item) => {
                 const hasDateGone = moment(new Date()).isAfter(item.startDate);
                 let { background, title } = getBackgroundColorBaseOnCheckList(hasDateGone, item.isCompleted)
                 return {
@@ -84,12 +134,19 @@ const ViewDailyProcess = () => {
                     </div>
                 )}
             </div>
-
-            <Card className='p-0 pt-2 p-2 mt-5'>
-                {goalTracker.length > 0 ? <Calender data={goalTracker} /> : <div className='d-flex justify-content-center align-item-center'>
-                    <Spinner /></div>}
-
-            </Card>
+            {goalTracker.length > 0 ? <>
+                <Paper elevation={1} className='p-0 pt-2 p-2 mt-5'>
+                    <Calender data={goalTracker} />
+                </Paper>
+                <Card className="mt-5" sx={{ maxWidth: "400px" }}>
+                    <CardHeader title={Strings.anaylsis} />
+                    <CardContent>
+                        {analysisSData.map(({ value, label }, index) => {
+                            return <AnalysisItem value={value} label={label} key={`${index}`} />
+                        })}
+                    </CardContent>
+                </Card>
+            </> : <Loader />}
         </Container>
 
     )
