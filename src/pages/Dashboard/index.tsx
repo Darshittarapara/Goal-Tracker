@@ -17,6 +17,7 @@ import { Row, Col } from 'react-bootstrap';
 import { LinearProgress } from '@mui/material';
 import { useGoalContext } from 'context/GoalContext/GoalContext';
 import Loader from 'components/Loader';
+import AnalysisItem from 'pages/DailyProcess/components/AnalysisItem';
 // import { mainListItems, secondaryListItems } from './listItems';
 
 function Copyright(props: any) {
@@ -88,10 +89,35 @@ const defaultTheme = createTheme();
 export default function Dashboard() {
   const [open, setOpen] = React.useState(true);
   const { goalsProcessList } = useDashboardContext()
-  const { isLoading } = useGoalContext()
+  const { isLoading, goals } = useGoalContext()
   const toggleDrawer = () => {
     setOpen(!open);
   };
+  const totalGoals = goals.length;
+  const goalWithHighPriority = goals.filter((item) => item.priority === "high")?.length;
+  const goalWithMediumPriority = goals.filter((item) => item.priority === "medium")?.length;
+  const goalWithLowPriority = goals.filter((item) => item.priority === "low")?.length
+
+  const goalHistory = [
+    {
+      value: totalGoals,
+      label: Strings.totalGoals
+    },
+    {
+      value: goalWithHighPriority,
+      label: Strings.highPriorityGoals
+    },
+    {
+      value: goalWithMediumPriority,
+      label: Strings.mediumPriorityGoals
+    },
+    {
+      value: goalWithLowPriority,
+      label: Strings.lowPriorityGoals
+    },
+  ]
+
+
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -159,14 +185,14 @@ export default function Dashboard() {
                     height: "auto",
                   }}
                 >
-                  <Typography component="h2" variant="h4" color="dark" gutterBottom>
+                  <Typography component="h4" variant="h5" color="dark" gutterBottom>
                     {Strings.goalsProcess}
                   </Typography>
                   {goalsProcessList?.length > 0 ? (
                     goalsProcessList.map((item) => {
                       const progressbarColor = item.value < 50 ? "error" : item.value >= 50 && item.value < 100 ? "primary" : "success"
                       return (
-                        <Row  className ="mb-2">
+                        <Row className="mb-2">
                           <Col>
                             <Typography component="h2" variant="h6">{item.title}</Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -186,8 +212,7 @@ export default function Dashboard() {
                   ) : <h4>No found</h4>}
                 </Paper>
               </Grid>
-              {/* Recent Deposits */}
-              {/* <Grid item xs={12} md={4} lg={3}>
+              <Grid item xs={12} md={4} lg={3}>
                 <Paper
                   sx={{
                     p: 2,
@@ -196,8 +221,14 @@ export default function Dashboard() {
                     height: 240,
                   }}
                 >
+                  <Typography component="h4" variant="h5" color="dark" gutterBottom>
+                    {Strings.goalHistory}
+                  </Typography>
+                  {goalHistory.map((item, index) => {
+                    return <AnalysisItem value={item.value} label={item.label} key={`${index}`} />
+                  })}
                 </Paper>
-              </Grid> */}
+              </Grid>
               {/* Recent Orders */}
               {/* <Grid item xs={12}>
               

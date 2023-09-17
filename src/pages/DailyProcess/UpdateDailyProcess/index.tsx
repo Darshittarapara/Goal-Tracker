@@ -16,7 +16,6 @@ const UpdateDailyProcess = () => {
     const { goals, getAllGoals, onDateSelected, selectedDate, isLoading, onUpdateGoalProcess } = useGoalContext();
 
     useEffect(() => {
-        console.log("this effect run")
         const token = localStorage.getItem(TOKEN_KEY);
         getAllGoals(GOALS + token)
     }, [getAllGoals])
@@ -64,7 +63,7 @@ const UpdateDailyProcess = () => {
     const handlerDateSelected = (date: string) => {
         onDateSelected(date, id!)
     }
-    console.log("goals", goals)
+
     return (
         <Container>
             <div className='progress-header'>

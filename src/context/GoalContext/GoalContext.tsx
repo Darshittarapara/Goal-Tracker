@@ -214,7 +214,6 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
     const setPreviousGoalCompletedValue = (date: string, docId: string) => {
         const previousGoals = state.goals.find((item) => item.id === docId)?.goalTracker;
         const newGoalTracker: GoalTrackerType = previousGoals?.find((item: { startDate: string; }) => item.startDate === date);
-        console.log(date, newGoalTracker);
         if (newGoalTracker) {
             return newGoalTracker?.isCompleted
         }

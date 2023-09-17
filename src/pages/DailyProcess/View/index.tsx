@@ -5,20 +5,26 @@ import { apiRouting } from 'config/apiRouting';
 import { GoalsStateFields, useGoalContext } from 'context/GoalContext/GoalContext';
 import { GOALS, TOKEN_KEY } from 'helper/storage';
 import moment from 'moment';
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Button, Spinner } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router'
 import { Link } from 'react-router-dom';
 import AnalysisItem from '../components/AnalysisItem';
 import Loader from 'components/Loader';
+import Modal from 'components/Modal/Modal';
 
 const ViewDailyProcess = () => {
     const navigator = useNavigate()
     const { id } = useParams();
+    const [openModal, setOpenModal] = useState(true);
     const { goals, getAllGoals, calculateGoalProcess } = useGoalContext();
 
     const startDate = goals.find((item) => item.id === id)?.startDate;
     const hasShowUpdateButton = moment().isSameOrAfter(startDate)
+    const modalDescription = [
+        Strings.greenBackgroundColorIndicateThatYouHaveCompletedThatDay,
+        Strings.redBackgroundColorIndicateThatYouHaveNotCompletedThatDay
+    ]
     useEffect(() => {
         const token = localStorage.getItem(TOKEN_KEY);
         getAllGoals(GOALS + token)
@@ -39,15 +45,12 @@ const ViewDailyProcess = () => {
         }
         return data
     }
-    console.log("goals", goals)
+
     // if (goals.length === 0) {
     //     return <Loader />
     // }
 
     const formatDate = (date: string) => {
-        const splitDate = date.split("-");
-        console.log(splitDate)
-        console.log(moment(`${splitDate[2]}-${splitDate[0]}-${splitDate[1]}`))
         // return new Date(Number(splitDate[2]), Number(splitDate[1]), Number(splitDate[0]))
         return moment(date)
     }
@@ -112,8 +115,12 @@ const ViewDailyProcess = () => {
         const path = apiRouting.goal.dailyProcess.update.replace(":id", id!)
         navigator(`/${path}`)
     }
+    const handlerModalClose = () => {
+        setOpenModal(false);
+    }
     return (
         <Container>
+            {openModal && <Modal open={openModal} buttonText={Strings.ok} descriptions={modalDescription} title={Strings.attendation} handlerClose={handlerModalClose} />}
             <div className='progress-header'>
 
                 <Breadcrumbs aria-label="breadcrumb">

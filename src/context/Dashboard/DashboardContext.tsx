@@ -42,7 +42,6 @@ const DashboardContextProvider: React.FC<AuthContextComponentProvider> = ({
 
     const { getAllGoals, goals, calculateGoalProcess } = useGoalContext();
 
-
     useEffect(() => {
         const token = localStorage.getItem(TOKEN_KEY);
         getAllGoals(GOALS + token)
@@ -53,7 +52,6 @@ const DashboardContextProvider: React.FC<AuthContextComponentProvider> = ({
         const progress = calculateGoalProcess(data?.totalDays, data?.goalTracker);
         return { value: progress, title: data?.name }
     });
-    console.log(goalProgressList)
     const dashboardContextValue = {
         goalsProcessList: goalProgressList
     }
