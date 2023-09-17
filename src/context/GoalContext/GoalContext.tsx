@@ -193,8 +193,8 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
    * @param {string} name
    * @return {Array<{id: string, isCompleted: boolean, startDate: string, endDate: string}>}
    */
-    const calculateGoalTrackerData = (startDate: string, endDate: string, name: string) => {
-        const data = [];
+    const calculateGoalTrackerData = (startDate: string, endDate: string, name: string, docId = "") => {
+        let data = [];
         const initialDate = moment(startDate, 'DD.MM.YYYY');
         const differentDays = moment(endDate, 'DD.MM.YYYY').diff(initialDate, 'days');
 
@@ -204,12 +204,22 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
                 id: `${name?.replaceAll(" ", "")}${i + 1}`,
                 startDate: currentDate.format('YYYY-MM-DD'),
                 endDate: currentDate.format('YYYY-MM-DD'),
-                isCompleted: false,
+                isCompleted: docId ? setPreviousGoalCompletedValue(currentDate.format('YYYY-MM-DD'), docId) : false,
             });
         }
+
         return { data, differentDays };
     };
 
+    const setPreviousGoalCompletedValue = (date: string, docId: string) => {
+        const previousGoals = state.goals.find((item) => item.id === docId)?.goalTracker;
+        const newGoalTracker: GoalTrackerType = previousGoals?.find((item: { startDate: string; }) => item.startDate === date);
+        console.log(date, newGoalTracker);
+        if (newGoalTracker) {
+            return newGoalTracker?.isCompleted
+        }
+        return false
+    }
     const getSpecificDocs = useCallback(async (docId: string) => {
         const token = localStorage.getItem(TOKEN_KEY)
         setState((preViewState) => {
@@ -287,7 +297,7 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
             isLoading: true
         });
 
-        const { data, differentDays } = calculateGoalTrackerData(payload.startDate, payload.dueDate, payload.name);
+        const { data, differentDays } = calculateGoalTrackerData(payload.startDate, payload.dueDate, payload.name, docId);
         const newPayload = {
             ...payload,
             goalTracker: JSON.stringify(data),

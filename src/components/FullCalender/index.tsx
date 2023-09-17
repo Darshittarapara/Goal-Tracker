@@ -63,9 +63,9 @@ const Calender: React.FC<CalenderProps> = ({
 
     const renderEventContent = (eventContent: any) => {
         return (
-            <div>
+            <div className={!hasSelected ? "title-container" : ""}>
                 <b>{eventContent.timeText}</b>
-                <i>{eventContent.event.title}</i>
+                <strong>{eventContent.event.title}</strong>
             </div>
         );
     };
@@ -80,7 +80,7 @@ const Calender: React.FC<CalenderProps> = ({
                     center: 'title',
                     right: ""
                 }}
-                longPressDelay={500}
+                longPressDelay={50}
                 initialView='dayGridMonth'
                 editable={true}
                 themeSystem='cosmo'

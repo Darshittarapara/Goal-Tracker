@@ -62,7 +62,7 @@ const ViewDailyProcess = () => {
     });
 
     const remainingDays = currenGoalTracker?.goalTracker?.filter((item) => {
-        return formatDate(item.startDate).isSameOrAfter(currentDate)
+        return formatDate(item.startDate).isAfter(currentDate)
     });
     const overAllProgress = calculateGoalProcess(currenGoalTracker?.totalDays, currenGoalTracker?.goalTracker)
 
@@ -100,10 +100,10 @@ const ViewDailyProcess = () => {
                     title: title,
                     start: item.startDate,
                     end: item.endDate,
-                    //    display: "background",
+                    display: "background",
                     backgroundColor: background
                 }
-            })
+            }).filter((data) => data.title)
             return calenderData
         }
         return []
