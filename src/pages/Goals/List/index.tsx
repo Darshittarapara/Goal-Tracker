@@ -31,8 +31,9 @@ const Goals = () => {
     }
 
     const renderColumn = (item: GoalsStateFields) => {
+         const splitDate = item.startDate?.split("-");
         const currentDate = moment()
-        const formatStartDate = moment(item.startDate)
+        const formatStartDate = moment(`${splitDate[2]}-${splitDate[1]}-${splitDate[0]}`)
         //TODO: Set the update daily process between start and due date
         const hasShowCompletedOption = formatStartDate.isSameOrBefore(currentDate)
         const infoTr = hasShowCompletedOption ? "rgb(13,202,240)" : ""
