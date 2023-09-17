@@ -21,6 +21,7 @@ const ViewDailyProcess = () => {
 
     const startDate = goals.find((item) => item.id === id)?.startDate;
     const hasShowUpdateButton = moment().isSameOrAfter(startDate)
+
     const modalDescription = [
         Strings.greenBackgroundColorIndicateThatYouHaveCompletedThatDay,
         Strings.redBackgroundColorIndicateThatYouHaveNotCompletedThatDay
@@ -135,11 +136,9 @@ const ViewDailyProcess = () => {
                     </Link>
                     <Typography color="text.primary">{Strings.viewDailyProcess}</Typography>
                 </Breadcrumbs>
-                {hasShowUpdateButton && (
                     <div>
                         <Button onClick={handlerNavigation} type="button" >{Strings.updateDailyProgress}</Button>
                     </div>
-                )}
             </div>
             {goalTracker.length > 0 ? <>
                 <Paper elevation={1} className='p-0 pt-2 p-2 mt-5'>
