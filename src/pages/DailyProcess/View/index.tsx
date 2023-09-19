@@ -65,9 +65,7 @@ const ViewDailyProcess = () => {
         return formatDate(item.startDate).isBefore(currentDate) && !item.isCompleted
     });
 
-    const remainingDays = currenGoalTracker?.goalTracker?.filter((item) => {
-        return formatDate(item.startDate).isAfter(currentDate)
-    });
+    const remainingDays = currenGoalTracker?.totalDays - (archivedDays?.length+nonArchivedDays?.length)
     const overAllProgress = calculateGoalProcess(currenGoalTracker?.totalDays, currenGoalTracker?.goalTracker)
 
     const analysisSData = [
