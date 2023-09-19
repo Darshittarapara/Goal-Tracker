@@ -86,7 +86,7 @@ const ViewDailyProcess = () => {
             label: Strings.overallProgress
         },
         {
-            value: remainingDays?.length,
+            value: remainingDays,
             label: Strings.remainingDays
         }
     ]
