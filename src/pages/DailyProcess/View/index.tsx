@@ -38,11 +38,10 @@ const ViewDailyProcess = () => {
         }
         if (hasDateGone && !isCompleted) {
             data["background"] = "#8B0000";
-            data["title"] = Strings.incomplted
+            
         }
         if (isCompleted) {
             data["background"] = "#008000";
-            data["title"] = Strings.completed
         }
         return data
     }
@@ -105,7 +104,7 @@ const ViewDailyProcess = () => {
                     display: "background",
                     backgroundColor: background
                 }
-            }).filter((data) => data.title)
+            })
             return calenderData
         }
         return []
