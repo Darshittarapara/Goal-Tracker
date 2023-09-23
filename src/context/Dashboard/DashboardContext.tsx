@@ -40,7 +40,7 @@ const DashboardContextProvider: React.FC<AuthContextComponentProvider> = ({
     children
 }) => {
 
-    const { getAllGoals, goals, calculateGoalProcess } = useGoalContext();
+    const { getAllGoals, goals, filterList, calculateGoalProcess } = useGoalContext();
 
     useEffect(() => {
         const token = localStorage.getItem(TOKEN_KEY);
@@ -48,7 +48,7 @@ const DashboardContextProvider: React.FC<AuthContextComponentProvider> = ({
     }, [getAllGoals])
 
     /**First this will collect the high priority task and calculate it */
-    const goalProgressList = goals?.filter((item) => item.priority === "high")?.filter((highPriority, index) => index <= 5)?.map((data) => {
+    const goalProgressList = filterList?.map((data) => {
         const progress = calculateGoalProcess(data?.totalDays, data?.goalTracker);
         return { value: progress, title: data?.name }
     });

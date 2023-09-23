@@ -18,6 +18,8 @@ import { LinearProgress } from '@mui/material';
 import { useGoalContext } from 'context/GoalContext/GoalContext';
 import Loader from 'components/Loader';
 import AnalysisItem from 'pages/DailyProcess/components/AnalysisItem';
+import MaterialUISelectInput from 'components/MaterialUISelectInput/MaterialUISelectInput';
+import { FilterOption } from 'pages/Goals/List';
 // import { mainListItems, secondaryListItems } from './listItems';
 
 function Copyright(props: any) {
@@ -89,10 +91,17 @@ const defaultTheme = createTheme();
 export default function Dashboard() {
   const [open, setOpen] = React.useState(true);
   const { goalsProcessList } = useDashboardContext()
-  const { isLoading, goals } = useGoalContext()
+  const { isLoading, goals, onFilter, filterAttribute, resetFilterState } = useGoalContext()
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  React.useEffect(() => {
+    return () => {
+      resetFilterState()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const totalGoals = goals.length;
   const goalWithHighPriority = goals.filter((item) => item.priority === "high")?.length;
   const goalWithMediumPriority = goals.filter((item) => item.priority === "medium")?.length;
@@ -185,9 +194,13 @@ export default function Dashboard() {
                     height: "auto",
                   }}
                 >
-                  <Typography component="h4" variant="h5" color="dark" gutterBottom>
-                    {Strings.goalsProcess}
-                  </Typography>
+                  <div className='section-header p-0'>
+                    <Typography component="h4" variant="h5" color="dark" gutterBottom>
+                      {Strings.goalsProcess}
+                    </Typography>
+                    <MaterialUISelectInput
+                      updateFieldKey={Strings.priority.toLocaleLowerCase()} label={Strings.priority} options={FilterOption} value={filterAttribute.priority} onChange={onFilter} />
+                  </div>
                   {goalsProcessList?.length > 0 ? (
                     goalsProcessList.map((item) => {
                       const progressbarColor = item.value < 50 ? "error" : item.value >= 50 && item.value < 100 ? "primary" : "success"

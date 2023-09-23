@@ -14,6 +14,13 @@ const GoalContext = createContext<GoalsContextProps>({
     goals: [],
     isLoading: false,
     isDataFetch: false,
+    filterAttribute: {
+        query: "",
+        priority: ""
+    },
+    resetFilterState: () => { },
+    onFilter: (value: string, updatedKey: string) => { },
+    filterList: [],
     selectedDate: [],
     onUpdateGoalProcess: (docId: string) => { },
     onActionValueChange: (value: string, id: string, goalTracker: GoalTrackerType[]) => { },
@@ -44,9 +51,13 @@ export interface GoalsStateFields {
 interface GoalsContextProps extends GoalReducerState {
     getSpecificDocs: (id: string) => any
     onUpdateGoalProcess: (docId: string) => void,
+    onFilter: (value: string, updatedKey: string) => void,
+    filterList: GoalsStateFields[],
     onActionValueChange: (value: string, id: string, goalTracker: GoalTrackerType[]) => void
     selectedActionOption: string
+    resetFilterState: () => void
     selectedDate: string[]
+    filterAttribute: FilterAttributeState
     onDateSelected: (date: string, id: string) => void,
     onAddGoal: (payload: AddGoalsPayload, path: string) => void
     calculateGoalProcess: (totalDays: number, goalTracker: GoalTrackerType[]) => number
@@ -70,9 +81,17 @@ export interface AddGoalsPayload {
     goalTracker: string
     priority: string;
 }
+export interface FilterAttributeState {
+    query: string;
+    priority: string
+}
 const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
     children
 }) => {
+    const [filterAttribute, setFilterAttribute] = useState<FilterAttributeState>({
+        priority: "high",
+        query: ""
+    })
     const [state, setState] = useState<GoalReducerState>({
         goals: [],
         isLoading: false,
@@ -81,6 +100,31 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
     const [selectedActionOption] = useState("");
     const navigator = useNavigate();
     const [selectedDate, setSelectedDate] = useState<string[]>([])
+
+
+    const filterList = state.goals.filter((item: GoalsStateFields) => {
+        if (filterAttribute.priority === "all" && !filterAttribute.query) {
+            return item
+        }
+        if (filterAttribute.priority === "all" && filterAttribute.query) {
+            return item.name.toLocaleLowerCase().includes(filterAttribute.query?.toLocaleLowerCase())
+        }
+        return item.priority === filterAttribute.priority && item.name.toLocaleLowerCase()?.includes(filterAttribute.query?.toLocaleLowerCase())
+    })
+
+    const resetFilterState = () => {
+        setFilterAttribute({
+            query: "",
+            priority: "high"
+        })
+    }
+
+    const handlerFilterChange = (value: string, updatedKey: string) => {
+        setFilterAttribute({
+            ...filterAttribute,
+            [updatedKey]: value
+        })
+    }
     const calculateGoalProcess = (totalDays: number, goalTracker: GoalTrackerType[]) => {
         if (!Array.isArray(goalTracker)) return 0
         const completedGoals = goalTracker.filter((item) => item.isCompleted);
@@ -367,11 +411,15 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
         calculateGoalProcess,
         getAllGoals: getGoalListFromFirebase,
         selectedActionOption,
+        filterList,
+        onFilter: handlerFilterChange,
         onActionValueChange: handlerActionButtonSelectInputChange,
         onUpdate: updateGoalToFirebase,
         onAddGoal: addGoalToFirebase,
         onUpdateGoalProcess: handlerCompletedTodayFieldInFirebase,
-        onDateSelected: handlerDateCalenderSelected
+        filterAttribute,
+        onDateSelected: handlerDateCalenderSelected,
+        resetFilterState
     }
 
     return <GoalContext.Provider value={goalContextValue}>

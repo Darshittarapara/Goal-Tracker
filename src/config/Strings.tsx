@@ -1,4 +1,5 @@
 export const Strings = {
+    all: "All",
     login: "Login",
     logOut: "Log out",
     email: "Email",
@@ -68,5 +69,6 @@ export const Strings = {
     pleaseSelectAPriority: "Please select a priority",
     pleaseWait: "Please wait...",
     pleaseEnterEmail: "Please enter email",
-    pleaseEnterValidEmail: "Please enter valid email"
+    pleaseEnterValidEmail: "Please enter valid email",
+    query: "query"
 }

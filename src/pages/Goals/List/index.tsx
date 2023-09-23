@@ -5,13 +5,23 @@ import React, { useEffect } from 'react'
 import { Spinner } from 'react-bootstrap';
 import "./List.scss";
 import moment from 'moment';
-import { Card, CardContent, CardHeader } from '@mui/material';
-
+import { Card, CardActions, CardContent, CardHeader, TextField, Typography } from '@mui/material';
+import MaterialUISelectInput from 'components/MaterialUISelectInput/MaterialUISelectInput';
+export const FilterOption = [
+    { value: "all", label: Strings.all },
+    { value: "high", label: Strings.high },
+    { value: "medium", label: Strings.medium },
+    { value: "low", label: Strings.low }
+]
 const Goals = () => {
-    const { getAllGoals, goals, isLoading, calculateGoalProcess, onActionValueChange } = useGoalContext();
+    const { getAllGoals, filterList, onFilter, filterAttribute, isLoading, calculateGoalProcess, onActionValueChange, resetFilterState } = useGoalContext();
     useEffect(() => {
         const token = localStorage.getItem(TOKEN_KEY);
         getAllGoals(GOALS + token)
+        return () => {
+            resetFilterState()
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [getAllGoals])
     if (isLoading) {
         return (
@@ -31,7 +41,7 @@ const Goals = () => {
     }
 
     const renderColumn = (item: GoalsStateFields) => {
-         const splitDate = item.startDate?.split("-");
+        const splitDate = item.startDate?.split("-");
         const currentDate = moment()
         const formatStartDate = moment(`${splitDate[2]}-${splitDate[1]}-${splitDate[0]}`)
         //TODO: Set the update daily process between start and due date
@@ -63,10 +73,22 @@ const Goals = () => {
             </tr>
         )
     }
+
+
     return (
 
         <Card>
-            <CardHeader title={Strings.goals} />
+            <div className='section-header'>
+                <div className='section-header-title'>
+                    <Typography component={"h2"} variant='h4'>{Strings.goals}</Typography>
+                </div>
+                <div className='section-actions'>
+                    <TextField id="outlined-search" value={filterAttribute.query} label="Search field" type="search" onChange={(e) => onFilter(e.target.value, "query")} />
+                    <MaterialUISelectInput
+                        className="filter-input"
+                        updateFieldKey={Strings.priority.toLocaleLowerCase()} label={Strings.priority} options={FilterOption} value={filterAttribute.priority} onChange={onFilter} />
+                </div>
+            </div>
             <CardContent>
                 <div className='table_wrapper'>
                     <table className='table table-bordered table-hover  m-0 table-responsive'>
@@ -81,7 +103,7 @@ const Goals = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {goals.length > 0 ? goals.map((item) => renderColumn(item)) : (
+                            {filterList.length > 0 ? filterList.map((item) => renderColumn(item)) : (
                                 <tr><td style={{ textAlign: 'center' }} colSpan={8}>{Strings.noGoalAdded}</td></tr>
                             )}
 
