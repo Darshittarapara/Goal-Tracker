@@ -33,6 +33,7 @@ export interface AddGoalFormikFormValues {
     name: string,
     startDate: Date
     endDate: Date
+    isAddToFavorite: boolean
     priority: string
     archiveSteps: string
 }

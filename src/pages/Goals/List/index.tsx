@@ -78,7 +78,7 @@ const Goals = () => {
     return (
 
         <Card>
-            <div className='section-header'>
+            <div className='section-header p-3'>
                 <div className='section-header-title'>
                     <Typography component={"h2"} variant='h4'>{Strings.goals}</Typography>
                 </div>

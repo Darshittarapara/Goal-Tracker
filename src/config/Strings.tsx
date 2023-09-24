@@ -1,5 +1,6 @@
 export const Strings = {
     all: "All",
+    addToFavorite: "Add to favorite",
     login: "Login",
     logOut: "Log out",
     email: "Email",

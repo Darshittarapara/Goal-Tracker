@@ -16,10 +16,12 @@ import { NavLink } from 'react-router-dom'
 import { apiRouting } from 'config/apiRouting'
 import Icon from 'components/Icons'
 import { faChevronDown, faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { FormControlLabel, Checkbox } from '@mui/material'
 const initialValues = {
     name: "",
     startDate: new Date(),
     endDate: new Date(),
+    isAddToFavorite: false,
     archiveSteps: "",
     priority: "medium"
 }
@@ -38,6 +40,7 @@ const AddGoals = () => {
                     id: 0,
                     isCompleted: false
                 }),
+                isAddToFavorite: values.isAddToFavorite,
                 priority: values.priority,
                 archiveSteps: values.archiveSteps
             }
@@ -74,7 +77,8 @@ const AddGoals = () => {
                         startDate: splitStringDateConvertStringToDate(data?.startDate),
                         endDate: splitStringDateConvertStringToDate(data?.dueDate),
                         priority: data?.priority,
-                        name: data?.name
+                        name: data?.name,
+                        isAddToFavorite: data?.isAddToFavorite
                     }
                 })
             }
@@ -182,6 +186,16 @@ const AddGoals = () => {
                                     value={formik.values.archiveSteps}
                                     labelText={Strings.archiveSteps}
                                     placeholder={Strings.archiveSteps}
+                                />
+                            </div>
+                            <div className='mb-2'>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={formik.values.isAddToFavorite}
+                                            onChange={(e) => formik.setFieldValue("isAddToFavorite", e.target.checked)}
+                                        />}
+                                    label={Strings.addToFavorite}
                                 />
                             </div>
                             <Button disabled={hasDisabled || isLoading} type="submit" className='mt-2 mb-2' variant="primary">

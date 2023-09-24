@@ -6,6 +6,7 @@ export const USER = "users";
 export const GOALS = "goals";
 export const GOALSIDLIST = "goalsIdList"
 export const GOALSDOCUMENTID = 'd08hGAeg1STzSVHiI4uO'
+export const FAVORITE_GOALS = "favoriteGoals"
 export const goalListDropDownOption = {
 	edit: "edit",
 	delete: "delete",

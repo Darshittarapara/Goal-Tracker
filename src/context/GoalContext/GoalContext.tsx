@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useState } from 'react'
+import React, { createContext, useCallback, useContext, useState, useEffect } from 'react'
 import { addDataToFirebaseStore, getDocsFromFirebase, updateDocsToFirebaseStore } from "../../Firebase/service";
 import { Strings } from 'config/Strings';
 import Swal from 'sweetalert2';
@@ -7,11 +7,12 @@ import { useNavigate } from 'react-router';
 import { apiRouting } from 'config/apiRouting';
 import { deleteDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../Firebase/config';
-import { GOALS, TOKEN_KEY, goalListDropDownOption } from 'helper/storage';
+import { FAVORITE_GOALS, GOALS, TOKEN_KEY, goalListDropDownOption } from 'helper/storage';
 import { Preview } from '@mui/icons-material';
 /**Change any */
 const GoalContext = createContext<GoalsContextProps>({
     goals: [],
+    favoriteGoals: [],
     isLoading: false,
     isDataFetch: false,
     filterAttribute: {
@@ -71,13 +72,15 @@ interface AuthContextComponentProvider {
 interface GoalReducerState {
     goals: any[];
     isLoading: boolean,
+    favoriteGoals: any[]
     isDataFetch: boolean
 }
 export interface AddGoalsPayload {
     startDate: string;
     dueDate: string;
     archiveSteps: string;
-    name: string
+    name: string;
+    isAddToFavorite: boolean;
     goalTracker: string
     priority: string;
 }
@@ -94,6 +97,7 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
     })
     const [state, setState] = useState<GoalReducerState>({
         goals: [],
+        favoriteGoals: [],
         isLoading: false,
         isDataFetch: false,
     })
@@ -101,7 +105,36 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
     const navigator = useNavigate();
     const [selectedDate, setSelectedDate] = useState<string[]>([])
 
-
+    const getFavoriteGoalListFromFirebase = useCallback(async (path: string) => {
+        setState((preViewState) => {
+            return {
+                ...preViewState,
+                isLoading: true
+            }
+        })
+        const data: any[] = await getDocsFromFirebase(path);
+        console.log(data);
+        if (data?.length > 0) {
+            setState((preViewState) => {
+                return {
+                    ...preViewState,
+                    isLoading: false,
+                    favoriteGoals: data
+                }
+            })
+        }
+        setState((preViewState) => {
+            return {
+                ...preViewState,
+                isLoading: false,
+                goals: []
+            }
+        })
+    }, [])
+    useEffect(() => {
+        const path = FAVORITE_GOALS + localStorage.getItem(TOKEN_KEY);
+        getFavoriteGoalListFromFirebase(path)
+    }, [getFavoriteGoalListFromFirebase])
     const filterList = state.goals.filter((item: GoalsStateFields) => {
         if (filterAttribute.priority === "all" && !filterAttribute.query) {
             return item
@@ -255,6 +288,13 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
         return { data, differentDays };
     };
 
+    const addGoalToFavoriteList = async (data: AddGoalsPayload, docId = "") => {
+        const token = localStorage.getItem(TOKEN_KEY)
+        const path = FAVORITE_GOALS + token
+        if (docId) return
+        await addDataToFirebaseStore(path, data);
+    }
+
     const setPreviousGoalCompletedValue = (date: string, docId: string) => {
         const previousGoals = state.goals.find((item) => item.id === docId)?.goalTracker;
         const newGoalTracker: GoalTrackerType = previousGoals?.find((item: { startDate: string; }) => item.startDate === date);
@@ -329,6 +369,10 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
             }
         })
     }, [])
+
+
+
+
     const performFirebaseOperation = async (
         payload: AddGoalsPayload,
         path: string,
@@ -352,7 +396,15 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
         if (operationType === 'update') {
             response = await updateDocsToFirebaseStore(path, docId as string, newPayload);
         } else if (operationType === 'add') {
-            response = await addDataToFirebaseStore(path, newPayload);
+            response = await addDataToFirebaseStore(path, newPayload) as any;
+            if (payload.isAddToFavorite) {
+                const data = {
+                    goalId: response.id,
+                    ...newPayload
+                }
+                addGoalToFavoriteList(data, docId)
+            }
+
         }
 
         const error = response as { error: string };
@@ -411,6 +463,7 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
         calculateGoalProcess,
         getAllGoals: getGoalListFromFirebase,
         selectedActionOption,
+        favoriteGoals: state.favoriteGoals,
         filterList,
         onFilter: handlerFilterChange,
         onActionValueChange: handlerActionButtonSelectInputChange,
