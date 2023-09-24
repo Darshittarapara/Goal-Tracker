@@ -33,7 +33,7 @@ const MaterialUISelectInput: React.FC<MaterialUISelectInputProps> = ({
     };
 
     return (
-        <FormControl sx={{ ml: 1, maxWidth: 300, minWidth: 200, }} className={className}>
+        <FormControl sx={{ ml: 1, maxWidth: 300, minWidth: 100, }} className={className}>
             <InputLabel id="demo-multiple-name-label">{label}</InputLabel>
             <Select
                 labelId="demo-multiple-name-label"
