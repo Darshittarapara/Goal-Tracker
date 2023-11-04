@@ -134,8 +134,9 @@ const GoalContextProvider: React.FC<AuthContextComponentProvider> = ({
             return 0; // or handle the case where there are no completed days as needed
         }
 
-        const process = (completedDays / totalDays) * 100
-        return process > 100 ? 100 : Number(process.toFixed(1))
+        let process = (completedDays / totalDays) * 100;
+        process =Math.round(process)
+        return process > 100 ? 100 : Number(process)
     }
     /**
      * This updated the date which user select in update daily process
