@@ -10,6 +10,7 @@ export const Strings = {
     lowPriorityGoals: "Low priority goals",
     highPriorityGoals: "High priority goals",
     anaylsis: "Analysis",
+    eneDate: "End date",
     emailNotRegister: "email not register",
     totalTargetDays: "Total target days",
     archivedGoalsDays: "Archived goals days",
