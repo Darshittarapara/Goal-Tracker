@@ -73,7 +73,7 @@ const ViewDailyProcess = () => {
             label: Strings.startDate
         },
         {
-            value: currenGoalTracker?.endDate,
+            value: currenGoalTracker?.dueDate,
             label: Strings.eneDate
         },
         {
