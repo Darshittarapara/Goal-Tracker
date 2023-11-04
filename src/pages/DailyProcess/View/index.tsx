@@ -69,6 +69,14 @@ const ViewDailyProcess = () => {
 
     const analysisSData = [
         {
+            value: goals.startDate,
+            label: Strings.startDate
+        },
+        {
+            value: goals.endDate,
+            label: Strings.eneDate
+        },
+        {
             value: currenGoalTracker?.totalDays,
             label: Strings.totalTargetDays
         },
