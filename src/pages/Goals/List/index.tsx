@@ -88,7 +88,7 @@ const Goals = () => {
                 {filterList.length > 0 ? (
                     filterList.map((item) => {
                     return (
-                        <Grid items xs={4} sx = {{
+                        <Grid items xs={4} style = {{
                             padding: 10     ,
                             borderRadius: "10px",
                             background: "#fff",
