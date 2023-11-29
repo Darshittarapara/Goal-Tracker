@@ -76,19 +76,22 @@ const Goals = () => {
 
 
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
+        <Container>
+        
+        
+        <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
+            <Box  gridColumn = {12}>
                 <Typography component="h2" >Goals List</Typography>
                 <TextField id="outlined-search" value={filterAttribute.query} label="Search field" type="search" onChange={(e) => onFilter(e.target.value, "query")} />
                 <MaterialUISelectInput
                     className="filter-input"
                     updateFieldKey={Strings.priority.toLocaleLowerCase()} label={Strings.priority} options={FilterOption} value={filterAttribute.priority} onChange={onFilter} />
-            </Grid>
-            <Grid item xs = {12}>
+            </Box>
+            <Box gridColumn = {12} display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
                 {filterList.length > 0 ? (
                     filterList.map((item) => {
                     return (
-                        <Grid items xs={4} style = {{
+                        <Box  gridColumn ={4} = {{
                             padding: 10     ,
                             borderRadius: "10px",
                             background: "#fff",
@@ -105,12 +108,13 @@ const Goals = () => {
                             <Box>
                                 <Typography component="span" >Process : {calculateGoalProcess(item.totalDays, item.goalTracker)}</Typography>
                             </Box>
-                        </Grid>    
+                        </Box>    
                     )
                     })
                 )  : <Box>No found</Box>}
-            </Grid>
-        </Grid>
+    </Box>
+    </Box>
+    </Container>
     ) 
 }
 
