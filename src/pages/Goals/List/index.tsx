@@ -85,7 +85,7 @@ const Goals = () => {
                     updateFieldKey={Strings.priority.toLocaleLowerCase()} label={Strings.priority} options={FilterOption} value={filterAttribute.priority} onChange={onFilter} />
             </Grid>
             <Grid item xs = {12}>
-                {filterList.length > 0 && (
+                {filterList.length > 0 ? (
                     filterList.map((item) => {
                         <Grid items xs={4} sx = {{
                             padding: 10     ,
@@ -106,7 +106,7 @@ const Goals = () => {
                             </Box>
                         </Grid>
                     })
-                )}
+                )  : <Box>No found</Box>}
             </Grid>
         </Grid>
     ) 
