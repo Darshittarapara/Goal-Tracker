@@ -5,7 +5,7 @@ import React, { useEffect } from 'react'
 import { Spinner } from 'react-bootstrap';
 import "./List.scss";
 import moment from 'moment';
-import { Card, CardActions, CardContent, CardHeader, TextField, Typography } from '@mui/material';
+import { Card, Container, CardContent, TextField, Typography, Grid, Box } from '@mui/material';
 import MaterialUISelectInput from 'components/MaterialUISelectInput/MaterialUISelectInput';
 export const FilterOption = [
     { value: "all", label: Strings.all },
@@ -76,45 +76,40 @@ const Goals = () => {
 
 
     return (
-
-        <Card>
-            <div className='section-header'>
-                <div className='section-header-title'>
-                    <Typography component={"h2"} variant='h4'>{Strings.goals}</Typography>
-                </div>
-                <div className='section-actions'>
-                    <TextField id="outlined-search" value={filterAttribute.query} label="Search field" type="search" onChange={(e) => onFilter(e.target.value, "query")} />
-                    <MaterialUISelectInput
-                        className="filter-input"
-                        updateFieldKey={Strings.priority.toLocaleLowerCase()} label={Strings.priority} options={FilterOption} value={filterAttribute.priority} onChange={onFilter} />
-                </div>
-            </div>
-            <CardContent>
-                <div className='table_wrapper'>
-                    <table className='table table-bordered table-hover  m-0 table-responsive'>
-                        <thead>
-                            <tr>
-                                {rows.map((item, index) => {
-                                    return <th className={!item ? 'checkbox' : ""} key={`${index}`}>{
-                                        !item ? checkbox() : item
-                                    }</th>
-                                })}
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filterList.length > 0 ? filterList.map((item) => renderColumn(item)) : (
-                                <tr><td style={{ textAlign: 'center' }} colSpan={8}>{Strings.noGoalAdded}</td></tr>
-                            )}
-
-                        </tbody>
-                    </table>
-                </div>
-            </CardContent>
-
-
-        </Card>
-    )
+        <Grid container spacing={2}>
+            <Box item xs={12}>
+                <Typography component="h2" >Goals List</Typography>
+                <TextField id="outlined-search" value={filterAttribute.query} label="Search field" type="search" onChange={(e) => onFilter(e.target.value, "query")} />
+                <MaterialUISelectInput
+                    className="filter-input"
+                    updateFieldKey={Strings.priority.toLocaleLowerCase()} label={Strings.priority} options={FilterOption} value={filterAttribute.priority} onChange={onFilter} />
+            </Box>
+            <Grid>
+                {filterList.length > 0 && (
+                    filterList.map((item) => {
+                        <Box items xs={4} sx = {{
+                            padding: 10     ,
+                            borderRadius: "10px",
+                            background: "#fff",
+                            border: "1px solid #f5f5f5"
+                        }}>
+                            <Box>
+                                <Typography component="h6" >{item.name}</Typography>
+                            </Box>
+                            <Box>
+                                <Typography component="span" >{item.name}</Typography>
+                                <Typography component="span" >{item.startDate}</Typography>
+                                <Typography component="span" >{item.dueDate}</Typography>
+                            </Box>
+                            <Box>
+                                <Typography component="span" >Process : {calculateGoalProcess(item.totalDays, item.goalTracker)}</Typography>
+                            </Box>
+                        </Box>
+                    })
+                )}
+            </Grid>
+        </Grid>
+    ) 
 }
 
 export default Goals
