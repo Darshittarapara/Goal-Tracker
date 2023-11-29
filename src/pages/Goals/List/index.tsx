@@ -77,17 +77,17 @@ const Goals = () => {
 
     return (
         <Grid container spacing={2}>
-            <Box item xs={12}>
+            <Grid item xs={12}>
                 <Typography component="h2" >Goals List</Typography>
                 <TextField id="outlined-search" value={filterAttribute.query} label="Search field" type="search" onChange={(e) => onFilter(e.target.value, "query")} />
                 <MaterialUISelectInput
                     className="filter-input"
                     updateFieldKey={Strings.priority.toLocaleLowerCase()} label={Strings.priority} options={FilterOption} value={filterAttribute.priority} onChange={onFilter} />
-            </Box>
-            <Grid>
+            </Grid>
+            <Grid item xs = {12}>
                 {filterList.length > 0 && (
                     filterList.map((item) => {
-                        <Box items xs={4} sx = {{
+                        <Grid items xs={4} sx = {{
                             padding: 10     ,
                             borderRadius: "10px",
                             background: "#fff",
@@ -104,7 +104,7 @@ const Goals = () => {
                             <Box>
                                 <Typography component="span" >Process : {calculateGoalProcess(item.totalDays, item.goalTracker)}</Typography>
                             </Box>
-                        </Box>
+                        </Grid>
                     })
                 )}
             </Grid>
