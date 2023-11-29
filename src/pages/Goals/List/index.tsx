@@ -76,7 +76,7 @@ const Goals = () => {
 
 
     return (
-        <Container>
+        <Container maxWidth="1200px">
         
         
         <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
