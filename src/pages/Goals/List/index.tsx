@@ -91,7 +91,7 @@ const Goals = () => {
                 {filterList.length > 0 ? (
                     filterList.map((item) => {
                     return (
-                        <Box  gridColumn ={4} = {{
+                        <Box  gridColumn ={4} style = {{
                             padding: 10     ,
                             borderRadius: "10px",
                             background: "#fff",
