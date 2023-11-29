@@ -87,6 +87,7 @@ const Goals = () => {
             <Grid item xs = {12}>
                 {filterList.length > 0 ? (
                     filterList.map((item) => {
+                    return (
                         <Grid items xs={4} sx = {{
                             padding: 10     ,
                             borderRadius: "10px",
@@ -104,7 +105,8 @@ const Goals = () => {
                             <Box>
                                 <Typography component="span" >Process : {calculateGoalProcess(item.totalDays, item.goalTracker)}</Typography>
                             </Box>
-                        </Grid>
+                        </Grid>    
+                    )
                     })
                 )  : <Box>No found</Box>}
             </Grid>
