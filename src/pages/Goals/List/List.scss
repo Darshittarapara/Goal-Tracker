@@ -41,7 +41,7 @@
         gap: 20px;
         .contain {
             padding:20px 10px;
-            box-shadow: 21px 20px 60px rgba(0, 0, 0, 0.2), 20px 20px 60px rgba(255, 255, 255, 0.5);
+          border:1px dashed #f5f5f5;
             border-radius: 10px;
             background: #fff;
             position: relative;
@@ -139,7 +139,7 @@
 }
 @media screen and (max-width: 787px) {
     .goal-container {
-        row-gap: 30px;
+        row-gap: 60px;
         .goal-header {
             flex-wrap: wrap;
         }
