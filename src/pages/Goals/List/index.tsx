@@ -1,12 +1,17 @@
 import { Strings } from 'config/Strings';
 import { GoalsStateFields, useGoalContext } from 'context/GoalContext/GoalContext'
 import { GOALS, TOKEN_KEY, goalListDropDownOption } from 'helper/storage';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Spinner } from 'react-bootstrap';
 import "./List.scss";
-import moment from 'moment';
-import { Card, Container, CardContent, TextField, Typography, Grid, Box } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import  {Link} from "react-router-dom"
+import {  TextField, Typography, Box } from '@mui/material';
 import MaterialUISelectInput from 'components/MaterialUISelectInput/MaterialUISelectInput';
+import { setBackground } from 'helper/storage';
+import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { apiRouting } from 'config/apiRouting';
+
 export const FilterOption = [
     { value: "all", label: Strings.all },
     { value: "high", label: Strings.high },
@@ -15,6 +20,8 @@ export const FilterOption = [
 ]
 const Goals = () => {
     const { getAllGoals, filterList, onFilter, filterAttribute, isLoading, calculateGoalProcess, onActionValueChange, resetFilterState } = useGoalContext();
+    const [selectedDropDownId, setSelectedDropDownId]= useState<string | null>(null);
+ 
     useEffect(() => {
         const token = localStorage.getItem(TOKEN_KEY);
         getAllGoals(GOALS + token)
@@ -23,6 +30,16 @@ const Goals = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [getAllGoals])
+ 
+    useEffect(() => {
+const handlerRemoveDropdownId = () => {
+    setSelectedDropDownId(null)
+}
+window.addEventListener("click", handlerRemoveDropdownId);
+return () => {
+    window.removeEventListener("click", handlerRemoveDropdownId)
+}
+    },[])
     if (isLoading) {
         return (
             <div className='d-flex justify-content-center'>
@@ -31,87 +48,88 @@ const Goals = () => {
         )
     }
 
-    const rows = [Strings.name, Strings.startDate, Strings.dueDate, Strings.priority, Strings.process, Strings.actions]
-    const checkbox = () => {
-        return (
-            <div className='form-check checkbox-lg'>
-                <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-            </div>
-        )
+
+ 
+    const cutGoalName = (name: string) => {
+return name.slice(0, 50)
     }
 
-    const renderColumn = (item: GoalsStateFields) => {
-        const splitDate = item.startDate?.split("-");
-        const currentDate = moment()
-        const formatStartDate = moment(`${splitDate[2]}-${splitDate[1]}-${splitDate[0]}`)
-        //TODO: Set the update daily process between start and due date
-        const hasShowCompletedOption = formatStartDate.isSameOrBefore(currentDate)
-        const infoTr = hasShowCompletedOption ? "rgb(13,202,240)" : ""
-        const process = calculateGoalProcess(item.totalDays, item.goalTracker);
-
-        return (
-            <tr style={{ background: infoTr }} key={`${item.id}`}>
-                {/* <td className='checkbox'>{checkbox()}</td> */}
-                <td>{item.name}</td>
-                <td>{item.startDate}</td>
-                <td>{item.dueDate}</td>
-                <td style={{
-                    textTransform: "capitalize"
-                }}>{item.priority}</td>
-                <td className={process === 0 ? "text-danger" : "text-success"}>{process}%</td>
-                <td>
-                    <select defaultValue="" name="selectedActionOption" className='form-select' onChange={(e) => onActionValueChange(e.target.value, item.id, item.goalTracker)}>
-                        <option disabled value={""}>{Strings.manage}</option>
-                        <option value={goalListDropDownOption.edit}>{Strings.edit}</option>
-                        {hasShowCompletedOption && (
-                            <option value={goalListDropDownOption.updateDailyProgress}>{Strings.updateDailyProgress}</option>
-                        )}
-                        <option value={goalListDropDownOption.viewDailyProgress}>{Strings.viewDailyProcess}</option>
-                        <option value={goalListDropDownOption.delete}>{Strings.delete}</option>
-                    </select>
-                </td>
-            </tr>
-        )
+    const handlerDropDown = (id: string) => {
+        if(id === selectedDropDownId)  {
+            setSelectedDropDownId(null);
+            return
+        }
+        setSelectedDropDownId(id)
     }
-
-
     return (
         <>
         
-        
-        <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
-            <Box  gridColumn = {12}>
-                <Typography component="h2" >Goals List</Typography>
-                <TextField id="outlined-search" value={filterAttribute.query} label="Search field" type="search" onChange={(e) => onFilter(e.target.value, "query")} />
+        <div className ="goal-container">
+            <div className = "goal-header">
+            <Typography component="h2" variant = "h4" >Goals List</Typography>
+            <div className = "filter">
+            <TextField id="outlined-search" value={filterAttribute.query} label="Search field" type="search" onChange={(e) => onFilter(e.target.value, "query")} />
                 <MaterialUISelectInput
                     className="filter-input"
                     updateFieldKey={Strings.priority.toLocaleLowerCase()} label={Strings.priority} options={FilterOption} value={filterAttribute.priority} onChange={onFilter} />
-            </Box>
-            <Box gridColumn = {12} display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
-                {filterList.length > 0 ? (
-                    filterList.map((item) => {
+            </div>
+            </div>
+            <div className = "goal-list">
+            {filterList.length > 0 ? (
+                    filterList.map((item: GoalsStateFields) => {
                     return (
-                        <Box  gridColumn ={4} style = {{
-                            padding: 10     ,
-                            borderRadius: "10px",
-                            background: "#fff",
-                            border: "1px solid #f5f5f5"
-                        }}>
-                            <Box>
-                                <Typography component="h6" >{item.name}</Typography>
-                            </Box>
-                            <Box>
-                                <Typography component="span" >{item.name}</Typography>
+                        <div className = "contain" >
+                            <div className ="goal-description-container">
+                            <div className = "name-container">
+                                <Typography  title ={item.name} component="h2" >{cutGoalName(item.name)}...</Typography>
+                                <FontAwesomeIcon onClick = {(e) => {
+                                    e.stopPropagation()
+                                     handlerDropDown(item.id);
+                                }} className='dropdown-icon' icon={faEllipsisVertical} />
+
+                                      {/**DropDown Option */}
+                            <div className= "dropdown-container" style = {{
+                                position: "absolute",
+                                right: "0px",
+                                // transition: "all 1s ease-in-out",
+                                zIndex: 3 ,
+                                display:  selectedDropDownId === item.id ? "block" : "none",
+                                top: selectedDropDownId === item.id ? "30px" : "-500px"
+                            }}>
+                                <ul>
+                                    <li><Link to = {apiRouting.goal.edit.replace(":id", item.id)}>{Strings.edit}</Link></li>
+                                    <li><Link to = {apiRouting.goal.dailyProcess.view.replace(":id", item.id)}>{Strings.viewDailyProcess}</Link></li>
+                                    <li><Link to = {apiRouting.goal.dailyProcess.update.replace(":id", item.id)}>{Strings.updateDailyProgress}</Link></li>
+                                       <li className ="delete-button" onClick = {() => onActionValueChange(goalListDropDownOption.delete, item.id, item.goalTracker)}>{Strings.delete}</li>
+                                </ul>
+                            </div>
+                            </div>
+                            <div className='date-container'>
                                 <Typography component="span" >{item.startDate}</Typography>
+                                <Typography component="span" >To</Typography>
                                 <Typography component="span" >{item.dueDate}</Typography>
-                            </Box>
-                            <Box>
-                                <Typography component="span" >Process : {calculateGoalProcess(item.totalDays, item.goalTracker)}</Typography>
-                            </Box>
-                        </Box>    
+                            </div>
+                            </div>
+                            <div style = {{
+                                background: setBackground(calculateGoalProcess(item.totalDays, item.goalTracker))
+                            }} className='process'>
+                                <Typography component="span" >Process : {calculateGoalProcess(item.totalDays, item.goalTracker)}%</Typography>
+                            </div>
+                      
+                        </div>    
                     )
                     })
                 )  : <Box>No found</Box>}
+            </div>
+
+        </div>
+        <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
+            <Box  gridColumn = {12}>
+                
+              
+            </Box>
+            <Box gridColumn = {12} display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
+              
     </Box>
     </Box>
         </>

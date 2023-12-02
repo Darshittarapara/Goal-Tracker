@@ -142,7 +142,7 @@ const ViewDailyProcess = () => {
                     <Typography color="text.primary">{Strings.viewDailyProcess}</Typography>
                 </Breadcrumbs>
                     <div>
-                        <Button onClick={handlerNavigation} type="button" >{Strings.updateDailyProgress}</Button>
+                        <Button onClick={handlerNavigation} type="button" >{Strings.update}</Button>
                     </div>
             </div>
             {goalTracker.length > 0 ? <>

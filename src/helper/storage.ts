@@ -36,3 +36,15 @@ export function generateUUID()
 
 return uuid?.replaceAll("-", "");
 }
+
+export const setBackground =(value: number) => {
+	if(value < 50) {
+		return "red"
+	}
+	else if (value >50 && value <100) {
+		return "rgb(42 100 158)"
+	}
+	else {
+		return "green"
+	}
+}

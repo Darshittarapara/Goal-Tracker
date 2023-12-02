@@ -3,11 +3,11 @@ export const apiRouting = {
     dashboard: "/dashboard",
     goal: {
         list: "/goals",
-        add: "goal/add",
-        edit: "goal/:id/edit",
+        add: "/goal/add",
+        edit: "/goal/:id/edit",
         dailyProcess: {
             view: "/goal/:id/view-daily-process",
-            update: "goal/:id/update-daily-process"
+            update: "/goal/:id/update-daily-process"
         }
     }
 }
